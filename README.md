@@ -1,17 +1,17 @@
-<h1 align="center">libpttea-py</h1>
+<h1 align="center">libpttea</h1>
 
 <div align="center">
 
 A Python library that encapsulates various PTT functions.
 
 
-![GitHub last commit](https://img.shields.io/github/last-commit/bubble-tea-project/libpttea-py)
-![GitHub License](https://img.shields.io/github/license/bubble-tea-project/libpttea-py)
+![GitHub last commit](https://img.shields.io/github/last-commit/bubble-tea-project/libpttea)
+![GitHub License](https://img.shields.io/github/license/bubble-tea-project/libpttea)
 
 </div>
 
 ## 📖 Description
-libpttea-py 是一個 Python library，目的在封裝各種 PTT 功能操作，旨在輔助開發 [PTTea](https://github.com/bubble-tea-project/PTTea) APP 專案的 PTT 功能函式庫。
+libpttea 是一個 Python library，目的在封裝各種 PTT 功能操作，旨在輔助開發 [PTTea](https://github.com/bubble-tea-project/PTTea) APP 專案的 PTT 功能函式庫。
 
 ## ✨ Supported
 - login
@@ -41,4 +41,4 @@ print(system_info)
 ```
 
 ## 📜 License
-![GitHub License](https://img.shields.io/github/license/bubble-tea-project/libpttea-py)
+![GitHub License](https://img.shields.io/github/license/bubble-tea-project/libpttea)
