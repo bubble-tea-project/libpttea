@@ -5,6 +5,7 @@
 A Python library that encapsulates various PTT functions.
 
 
+![PyPI - Version](https://img.shields.io/pypi/v/libpttea)
 ![GitHub last commit](https://img.shields.io/github/last-commit/bubble-tea-project/libpttea)
 ![GitHub License](https://img.shields.io/github/license/bubble-tea-project/libpttea)
 
@@ -12,6 +13,8 @@ A Python library that encapsulates various PTT functions.
 
 ## 📖 Description
 libpttea 是一個 Python library，目的在封裝各種 PTT 功能操作，旨在輔助開發 [PTTea](https://github.com/bubble-tea-project/PTTea) APP 專案的 PTT 功能函式庫。
+
+Pypi: https://pypi.org/project/libpttea/
 
 ## ✨ Supported
 - login
