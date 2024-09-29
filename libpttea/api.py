@@ -43,7 +43,7 @@ class API:
         self.account = account
         self.password = password
 
-        self.session = ptt_functions.login(self.session, account, password)
+        self.session = ptt_functions.login(self.session, account + ",", password)
         self.session = ptt_functions.skip_init(self.session, del_duplicate, del_error_log)
 
         return
