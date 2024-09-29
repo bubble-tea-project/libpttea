@@ -12,7 +12,7 @@ import time
 from collections import deque
 from typing import Pattern
 
-import ansi_to_html
+import ansiparser
 import websocket
 
 from .websocket_client import WebSocketClient
@@ -31,7 +31,7 @@ class Session:
         # binary buffer for receive message
         self.received_binary_buffer = deque()
 
-        self.a2h_screen = ansi_to_html.new_screen()
+        self.a2h_screen = ansiparser.new_screen()
 
         # current ptt page location
         self.current_location = ""
