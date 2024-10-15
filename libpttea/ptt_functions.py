@@ -102,7 +102,7 @@ def skip_init(session: Session, del_duplicate=True, del_error_log=True) -> Sessi
 
     # Skip - if the system is busy
     session.flush_buffer()
-    session.a2h_screen.buffer_clear_old()
+    session.a2h_screen.clear_old_buffer()
     current_screen_str = session.a2h_screen.peek_string()
 
     find_busy = "請勿頻繁登入以免造成系統過度負荷"
@@ -114,7 +114,7 @@ def skip_init(session: Session, del_duplicate=True, del_error_log=True) -> Sessi
         session.until_string("按任意鍵繼續")
         session.flush_buffer()
 
-        session.a2h_screen.buffer_clear_old()
+        session.a2h_screen.clear_old_buffer()
         current_screen_str = session.a2h_screen.peek_string()
 
     # Skip - last login ip
@@ -140,7 +140,7 @@ def skip_init(session: Session, del_duplicate=True, del_error_log=True) -> Sessi
         session.send(pattern.NEW_LINE)
         session.clear_buffer()
     else:
-        session.a2h_screen.buffer_clear()
+        session.a2h_screen.clear_buffer()
 
     # Wait for the home menu to load
     ptt_action.home_loaded_status_bar(session)
@@ -327,7 +327,7 @@ def get_post_all(session: Session, board: str, post_index: int) -> tuple[Session
     session.a2h_screen.parse()
     current_page = session.a2h_screen.to_formatted_string()
     post_pages.append(current_page)
-    raw_post_pages.append(session.a2h_screen.parsed_screen())
+    raw_post_pages.append(session.a2h_screen.get_parsed_screen())
 
     # load all post
     # use the status bar to check the load state
@@ -354,7 +354,7 @@ def get_post_all(session: Session, board: str, post_index: int) -> tuple[Session
 
         current_page = session.a2h_screen.to_formatted_string()
         post_pages.append(current_page)
-        raw_post_pages.append(session.a2h_screen.parsed_screen())
+        raw_post_pages.append(session.a2h_screen.get_parsed_screen())
 
     # back
     ptt_action.post_to_board(session)

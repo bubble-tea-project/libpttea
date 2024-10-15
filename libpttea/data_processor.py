@@ -170,6 +170,6 @@ def get_post_all(post_pages: list, raw_post_pages: list) -> str:
 
     raw_merged_post = _merge_post(raw_post_pages, merge_span)
 
-    a2h_screen = ansiparser.from_inter_converted(raw_merged_post)
+    a2h_screen = ansiparser.from_screen(raw_merged_post)
     return a2h_screen.to_html()
 
