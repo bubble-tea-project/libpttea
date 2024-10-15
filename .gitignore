@@ -1,7 +1,13 @@
 __pycache__
+
 .venv
 poetry.toml
 poetry.lock
+
 .vscode
 _tests
+dist
 
+docs/_build
+docs/make.bat
+docs/Makefile
