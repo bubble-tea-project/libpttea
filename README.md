@@ -7,7 +7,6 @@ A Python library that encapsulates various PTT functions.
 
 [![PyPI - Stable Version](https://img.shields.io/pypi/v/libpttea?label=stable)](https://pypi.org/project/libpttea/#history)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/libpttea)](https://pypi.org/project/libpttea/)
-
 [![GitHub License](https://img.shields.io/github/license/bubble-tea-project/libpttea)](https://github.com/bubble-tea-project/libpttea/blob/main/LICENSE)
 
 </div>
