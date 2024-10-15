@@ -1,17 +1,36 @@
 [tool.poetry]
-name = "libpttea-py"
+name = "libpttea"
 version = "0.1.0"
-description = ""
-authors = ["Your Name <you@example.com>"]
+description = "A Python library that encapsulates various PTT functions."
+license = "LGPL-3.0-or-later"
+authors = ["vHrqO <you@example.com>"]
 readme = "README.md"
+repository = "https://github.com/bubble-tea-project/libpttea"
+
 
 [tool.poetry.dependencies]
-python = "^3.12"
-
+python = "^3.10"
+ansiparser = "^1.2.0"
+websocket-client = "^1.8.0"
 
 [tool.poetry.group.dev.dependencies]
+ansiparser = "^1.2.0"
 websocket-client = "^1.8.0"
 beautifulsoup4 = "^4.12.3"
+
+
+[tool.poetry.group.packaging.dependencies]
+twine = "^5.1.1"
+build = "^1.2.2.post1"
+
+[tool.poetry.group.test.dependencies]
+pytest = "^8.3.3"
+
+[tool.poetry.group.docs.dependencies]
+sphinx = "^8.0.2"
+furo = "^2024.8.6"
+myst-parser = "^4.0.0"
+
 
 [build-system]
 requires = ["poetry-core"]
