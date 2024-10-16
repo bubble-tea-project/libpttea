@@ -85,7 +85,7 @@ async def _login(session: Session, account: str, password: str) -> Session:
     return session
 
 
-async def _skip_login_init(session: Session, del_duplicate=True, del_error_log=True) -> Session:
+async def _skip_login_init(session: Session, del_duplicate=True, del_error_log=True) -> None:
     """skip the login initialization step until the home menu is loaded."""
     
     # Skip - duplicate connections
@@ -167,7 +167,7 @@ async def _skip_login_init(session: Session, del_duplicate=True, del_error_log=T
             break
     
 
-    return session
+    return 
 
 
 async def login(session: Session,  account: str, password: str, del_duplicate:bool, del_error_log:bool) -> Session:
@@ -180,7 +180,9 @@ async def login(session: Session,  account: str, password: str, del_duplicate:bo
     # add ',' for use utf8 in  Websocket
     session = await _login(session, account + ",", password)
 
-    session = await _skip_login_init(session, del_duplicate ,del_error_log)
+    await _skip_login_init(session, del_duplicate ,del_error_log)
+
+    return session
 
 
 
@@ -188,4 +190,25 @@ async def login(session: Session,  account: str, password: str, del_duplicate:bo
 
 
 
-    return
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

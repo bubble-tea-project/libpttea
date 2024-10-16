@@ -33,13 +33,4 @@ class API:
 
         self.session = await ptt_functions.login(self.session, account , password , del_duplicate , del_error_log)
 
-
-
-
-
-        # ---
-        
-
-        
-
         return
