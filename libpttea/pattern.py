@@ -21,3 +21,13 @@ HOME = "\x1b[1~"
 END = "\x1b[4~"
 PAGE_UP = "\x1b[5~"
 PAGE_DOWN = "\x1b[6~"
+
+
+# regular expression
+
+# r'\[\d+\/\d+\s\S+\s\d+:\d+\].+人,.+\[呼叫器\].+'
+regex_menu_status_bar = re.compile(R'''
+    \[\d+\/\d+\s\S+\s\d+:\d+\]    # [0/00 星期五 22:00]
+    .+人,.+    # Intermediate part
+    \[呼叫器\].+  # [呼叫器]打開
+''', re.VERBOSE)

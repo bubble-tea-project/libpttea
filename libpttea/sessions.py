@@ -17,7 +17,7 @@ import ansiparser
 import websocket
 
 from .websocket_client import WebSocketClient
-
+from .router import Router
 
 class Session:
 
@@ -33,6 +33,8 @@ class Session:
         self.received_binary_buffer = deque()
 
         self.ansip_screen = ansiparser.new_screen()
+
+        self.router = Router(self.ansip_screen)
 
         
     def send(self, string: str) -> bytes:
