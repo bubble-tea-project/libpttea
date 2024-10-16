@@ -153,28 +153,18 @@ async def _skip_login_init(session: Session, del_duplicate=True, del_error_log=T
 
 
     # Wait for the home menu to load
-    while True:
-        
-        message = await session.receive()
-        messages.append(message)
-
-        if "\x1b[m\x1b[16;21H" in message:
-            break
-    
-    # ----
     for message in messages:
         session.ansip_screen.put( message )
 
-    session.ansip_screen.parse()
-    tmp = session.ansip_screen.to_formatted_string()
-    # ptt_action.home_loaded_status_bar(session)
+    while True:
+        
+        message = await session.receive()
+        session.ansip_screen.put( message )
 
-    # session.flush_buffer()
-    # session.ansip_screen.parse()
-    # session.current_location = "home"
-
-
-    # ------
+        if session.router.in_home():
+            # 
+            session.router.init_home()
+            break
     
 
     return session
