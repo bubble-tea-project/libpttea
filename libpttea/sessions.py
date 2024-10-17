@@ -29,12 +29,12 @@ class Session:
         self.ws_connection: websocket.WebSocketApp | None = None
         self.ws_queue: asyncio.Queue | None = None
 
-        # binary buffer for receive message
+        # !remove  binary buffer for receive message,
         self.received_binary_buffer = deque()
 
         self.ansip_screen = ansiparser.new_screen()
 
-        self.router = Router(self.ansip_screen)
+        self.router = Router(self)
 
         
     def send(self, string: str) -> bytes:
@@ -102,11 +102,16 @@ class Session:
             return await asyncio.wait_for( _until_string() , timeout=timeout)
 
 
-        
-
-    async def until_string_r(self, string: str, timeout=5) -> str:
+    
+    async def until_string_and_put(self, string: str, timeout=5) -> list:
         """until specific string received """
-        pass
+
+        messages = await self.until_string(string,False,timeout)
+
+        for message in messages:
+            self.ansip_screen.put( message )
+
+        return messages
 
 
 
