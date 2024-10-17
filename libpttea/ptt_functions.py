@@ -9,7 +9,7 @@ import queue
 import re
 import threading
 
-from . import pattern, ptt_action
+from . import pattern, ptt_action , data_processor
 from .sessions import Session
 from .websocket_client import WebSocketClient
 
@@ -186,9 +186,28 @@ async def login(session: Session,  account: str, password: str, del_duplicate:bo
 
 
 
+async def _get_system_info(session: Session) -> list:
+    """get the system info (查看系統資訊)."""
+
+    
+    if session.router.location() != "/utility/info":
+        await session.router.go("/utility/info")
+
+    system_info_page = session.ansip_screen.to_formatted_string()
+
+    return system_info_page
 
 
+async def get_system_info(session: Session) -> list:
+    
+    if session is None:
+        raise RuntimeError("Not logged in yet.")
+    
+    system_info_page = await _get_system_info(session)
 
+    system_info = data_processor.get_system_info(system_info_page)
+    
+    return system_info
 
 
 

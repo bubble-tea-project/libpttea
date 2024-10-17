@@ -34,3 +34,14 @@ class API:
         self.session = await ptt_functions.login(self.session, account , password , del_duplicate , del_error_log)
 
         return
+    
+
+
+    async def get_system_info(self) -> list:
+        """get the PTT system info. 
+
+        查看 PTT 系統資訊"""
+
+        return await ptt_functions.get_system_info(self.session)
+
+        
