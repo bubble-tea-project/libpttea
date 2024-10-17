@@ -29,9 +29,7 @@ class Session:
         self.ws_connection: websocket.WebSocketApp | None = None
         self.ws_queue: asyncio.Queue | None = None
 
-        # !remove  binary buffer for receive message,
-        self.received_binary_buffer = deque()
-
+        
         self.ansip_screen = ansiparser.new_screen()
 
         self.router = Router(self)
@@ -102,11 +100,56 @@ class Session:
             return await asyncio.wait_for( _until_string() , timeout=timeout)
 
 
-    
+    async def until_regex(self, regex: str | Pattern, drop=False, timeout=2) -> str| list:
+        """matches the `regex`"""
+
+        async def _until_regex_drop():
+
+            while True:
+                message = await self.receive(timeout=None)
+
+                match = re.search(regex, message)
+                if match:
+                    return message
+
+        async def _until_regex():
+            messages = []
+
+            while True:
+                message = await self.receive(timeout=None)
+                messages.append(message)
+
+                match = re.search(regex, message)
+                if match:
+                    return messages
+
+        if drop is True:
+            return await asyncio.wait_for( _until_regex_drop() , timeout=timeout)
+        else:
+            return await asyncio.wait_for( _until_regex() , timeout=timeout)
+
+
+    async def receive_and_put(self , timeout=3) -> str:
+        
+        message = await self.receive(timeout)
+        self.ansip_screen.put( message )
+
+        return message
+
     async def until_string_and_put(self, string: str, timeout=5) -> list:
         """until specific string received """
 
         messages = await self.until_string(string,False,timeout)
+
+        for message in messages:
+            self.ansip_screen.put( message )
+
+        return messages
+    
+    async def until_regex_and_put(self, regex: str | Pattern, timeout=5) -> list:
+        """re"""
+
+        messages = await self.until_regex(regex,False,timeout)
 
         for message in messages:
             self.ansip_screen.put( message )
@@ -121,62 +164,10 @@ class Session:
 
 
 
-    # ------
-    
+   
+
+ 
 
     
-
-    
-
-    async def receive_to_buffer(self, encoding='utf-8') -> str:
-        """Receive the message and put the raw message into `received_binary_buffer`."""
-
-        raw_message = await self.receive_raw()
-        self.received_binary_buffer.append(raw_message)
-
-        return raw_message.decode(encoding=encoding, errors="ignore")
-
-    def flush_buffer(self) -> str:
-        """Remove all elements from `received_binary_buffer` and put them to the `a2h_screen` buffer."""
-
-        raw_message = b"".join(self.received_binary_buffer)
-        message = raw_message.decode(encoding='utf-8')
-
-        self.ansip_screen.put(message)
-        self.received_binary_buffer.clear()
-        return message
-
-    def clear_buffer(self) -> str:
-        """Remove all elements from the `received_binary_buffer`"""
-        self.received_binary_buffer.clear()
-
-    async def until_string_(self, string: str, timeout=2) -> str:
-        """Receive and put the raw message into `received_binary_buffer` 
-        until the specified 'string' is found in `received_binary_buffer`."""
-
-        while True:
-            raw_message = await self.receive_raw(timeout=timeout)
-            self.received_binary_buffer.append(raw_message)
-
-            current_buffer = b"".join(self.received_binary_buffer)
-
-            message = current_buffer.decode(encoding='utf-8', errors="ignore")
-            if string in message:
-                return message
-
-    async def until_regex(self, regex: str | Pattern, timeout=2) -> str:
-        """Receive and put the raw message into `received_binary_buffer` 
-        until the string in `received_binary_buffer` matches the `regex`"""
-
-        while True:
-            raw_message = await self.receive_raw(timeout=timeout)
-            self.received_binary_buffer.append(raw_message)
-
-            current_buffer = b"".join(self.received_binary_buffer)
-
-            message = current_buffer.decode(encoding='utf-8', errors="ignore")
-            match = re.search(regex, message)
-            if match:
-                return message
 
 
