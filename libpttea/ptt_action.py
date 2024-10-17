@@ -27,7 +27,7 @@ async def move_home(session:Session , target=None ):
         await session.until_string_and_put("《查看系統資訊》")
         session.ansip_screen.parse()
         
-
+        
     # back
     if target is None:
         raise RuntimeError()
@@ -38,6 +38,9 @@ async def move_home(session:Session , target=None ):
             await __go_utility()
         case _:
             raise NotImplementedError(f"Not supported yet , ={target}.")
+        
+    
+    return
 
 
 
@@ -51,6 +54,7 @@ async def move_utility(session:Session , target=None ):
         # wait home loaded
         # 【 系統資訊區 】[K[20;23H([1;36mG[m)oodbye[20;41H離開，再見
         await session.until_string_and_put("\x1b[20;41H離開，再見")
+        session.ansip_screen.parse()
        
 
     async def __go_info():
@@ -60,10 +64,12 @@ async def move_utility(session:Session , target=None ):
 
         await session.until_string_and_put("請按任意鍵繼續")
         session.ansip_screen.parse()
+        
     
     # back
     if target is None:
         await __back()
+        return
 
 
     # go
@@ -72,38 +78,21 @@ async def move_utility(session:Session , target=None ):
             await __go_info() 
         case _:
             raise NotImplementedError(f"Not supported yet , ={target}.")
+            
+    return
         
 
 async def move_utility_info(session:Session):
 
-    async def __in_utility():
-
-        if session.ansip_screen.buffer_empty() is False:
-            session.ansip_screen.parse()
-
-        current_screen = session.ansip_screen.to_formatted_string()
-    
-        # Check the title line
-        if "工具程式" not in current_screen[0]:
-            return False
-
-        # check status bar
-        match = re.search(pattern.regex_menu_status_bar, current_screen[-1])
-        if match is None:
-            return False
-
-        return True
-        
-
-    
     # back
+    # 請按任意鍵繼續
     session.send(pattern.NEW_LINE)
 
-    while True:
-        
-        message = await session.receive()
-        session.ansip_screen.put( message )
+    # wait sys_info_area loaded
+    # [呼叫器][31m打開 [m[19;21H
+    await session.until_string_and_put("\x1b[m\x1b[19;21H")
 
-        if __in_utility():
-            session.ansip_screen.parse()
-            return
+    session.ansip_screen.parse()
+    return
+        
+    

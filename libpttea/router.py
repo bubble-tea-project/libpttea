@@ -72,9 +72,7 @@ class Router:
 
     async def __back(self ,needs:list) -> None:
         
-        needs.reverse()
-
-        for index, current_location in enumerate(needs):
+        for current_location in reversed(needs):
 
             match current_location:
                 case "utility":
