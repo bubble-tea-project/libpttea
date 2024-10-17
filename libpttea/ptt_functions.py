@@ -8,10 +8,14 @@ This module implements various PTT functions.
 import queue
 import re
 import threading
+import logging
 
 from . import pattern, ptt_action , data_processor
 from .sessions import Session
 from .websocket_client import WebSocketClient
+
+
+logger = logging.getLogger("libpttea")
 
 
 async def _login(session: Session, account: str, password: str) -> Session:
@@ -26,14 +30,14 @@ async def _login(session: Session, account: str, password: str) -> Session:
     session.ws_connection = session.websocket_client.ws_connection
 
 
-    print("### start connect")
+    logger.info("start connect")
     session.thread_client.start()
 
     # Wait for connected
     while True:
         if session.websocket_client.connected is True:
             break
-    print("### connected")
+    logger.info("connected")
 
 
     # start login
@@ -81,7 +85,7 @@ async def _login(session: Session, account: str, password: str) -> Session:
         raise RuntimeError("Check if the login start loading failed.")
 
 
-    print("### logged in")
+    logger.info("logged in")
     return session
 
 

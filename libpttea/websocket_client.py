@@ -8,6 +8,10 @@ This module provides the WebSocket client for connecting to PTT.
 import queue
 import asyncio
 import websocket
+import logging
+
+
+logger = logging.getLogger("websocket_client")
 
 
 class WebSocketClient:
@@ -29,15 +33,15 @@ class WebSocketClient:
 
     def __on_open(self, wsapp: websocket.WebSocketApp):
 
-        print("### Opened connection ###")
+        logger.info("connection opened")
         self.connected = True
 
     def __on_message(self, wsapp: websocket.WebSocketApp, message: str):
 
         self.ws_queue.put_nowait(message)
         #
-        tmp = (message.decode("utf-8", errors="ignore"),)
-        print("get >>>", tmp)
+        logger.debug(f"receive >>({message.decode("utf-8", errors="ignore")})\n")
+
 
     def __on_error(self, wsapp: websocket.WebSocketApp, error: Exception):
 
@@ -46,7 +50,7 @@ class WebSocketClient:
 
     def __on_close(self, wsapp: websocket.WebSocketApp, close_status_code: int, close_msg: str):
 
-        print("### Closed connection###")
+        logger.info("connection closed")
         # raise ConnectionClosed(close_msg)
 
     def connect(self) -> None:
