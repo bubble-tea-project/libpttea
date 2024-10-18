@@ -35,6 +35,12 @@ class API:
 
         return
     
+    async def logout(self, force=False) -> None:
+        """Log out from PTT.
+
+        登出 PTT"""
+
+        return await ptt_functions.logout(self.session , force=force)
 
 
     async def get_system_info(self) -> list:

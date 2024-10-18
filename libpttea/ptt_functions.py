@@ -214,6 +214,52 @@ async def get_system_info(session: Session) -> list:
     return system_info
 
 
+async def _logout(session: Session ) -> None:
+
+    if session.router.location() != "/":
+        await session.router.go("/")
+
+    # select index , 離開，再見
+    session.send("g")
+    session.send(pattern.RIGHT_ARROW)
+
+    # wait ask
+    # 您確定要離開【 批踢踢實業坊 】嗎(Y/N)？
+    await session.until_string("您確定要離開")
+
+    # send yes
+    session.send("y")
+    await session.until_string("y")
+    session.send(pattern.NEW_LINE)
+
+    # check logout success
+    await session.until_string("期待您下一次的光臨")
+
+    return
+
+async def logout(session: Session , force=False) -> None:
+    
+    if session is None:
+        raise RuntimeError("Is logged out")
+    
+
+    try:
+        await _logout(session)
+    except TimeoutError:
+
+        if force is False:
+            raise RuntimeError("logout failed")
+        else:
+            logger.info("force logout")
+
+    logger.info("logged out")
+
+    session.ws_connection.close()
+    session = None
+
+    
+    
+
 
 
 
