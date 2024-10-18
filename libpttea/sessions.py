@@ -15,6 +15,7 @@ import asyncio
 
 import ansiparser
 import websocket
+import websockets.asyncio.client
 
 from .websocket_client import WebSocketClient
 from .router import Router
@@ -26,7 +27,7 @@ class Session:
         self.websocket_client: WebSocketClient | None = None
         self.thread_client: threading.Thread | None = None
 
-        self.ws_connection: websocket.WebSocketApp | None = None
+        self.ws_connection: websockets.asyncio.client.ClientConnection | None = None
         self.ws_queue: asyncio.Queue | None = None
 
         
@@ -39,7 +40,8 @@ class Session:
         """Send the message, encoded in UTF-8."""
 
         string_encode = string.encode('utf-8')
-        self.ws_connection.send_bytes(string_encode)
+        # self.ws_connection.send_bytes(string_encode)
+        self.websocket_client.send( string_encode )
 
         return string_encode
 

@@ -9,6 +9,7 @@ import queue
 import re
 import threading
 import logging
+import asyncio
 
 from . import pattern, ptt_action , data_processor
 from .sessions import Session
@@ -23,22 +24,25 @@ async def _login(session: Session, account: str, password: str) -> Session:
     # create connection
     session = Session()
 
+    # session.websocket_client = WebSocketClient()
+    # session.thread_client = threading.Thread(target=session.websocket_client.connect)
+
     session.websocket_client = WebSocketClient()
-    session.thread_client = threading.Thread(target=session.websocket_client.connect)
+
 
     session.ws_queue = session.websocket_client.ws_queue
-    session.ws_connection = session.websocket_client.ws_connection
-
+    
+    
 
     logger.info("start connect")
-    session.thread_client.start()
-
+    # session.thread_client.start()
+    # await session.websocket_client.connect()
+    asyncio.create_task( session.websocket_client.connect() )
+    
     # Wait for connected
-    while True:
-        if session.websocket_client.connected is True:
-            break
+    await session.websocket_client.connected.wait()
     logger.info("connected")
-
+    session.ws_connection = session.websocket_client.ws_connection
 
     # start login
     # Use Big5 first and ignore errors (ignore Big5-UAO)
@@ -254,7 +258,7 @@ async def logout(session: Session , force=False) -> None:
 
     logger.info("logged out")
 
-    session.ws_connection.close()
+    await session.websocket_client.close()
     session = None
 
     
