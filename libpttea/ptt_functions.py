@@ -30,7 +30,7 @@ async def _login(session: Session, account: str, password: str) -> Session:
     session.websocket_client = WebSocketClient()
 
 
-    session.ws_queue = session.websocket_client.ws_queue
+    session.ws_queue = session.websocket_client.receive_queue
     
     
 
@@ -42,7 +42,7 @@ async def _login(session: Session, account: str, password: str) -> Session:
     # Wait for connected
     await session.websocket_client.connected.wait()
     logger.info("connected")
-    session.ws_connection = session.websocket_client.ws_connection
+    session.ws_connection = session.websocket_client.connection
 
     # start login
     # Use Big5 first and ignore errors (ignore Big5-UAO)
