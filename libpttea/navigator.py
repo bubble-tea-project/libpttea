@@ -16,6 +16,58 @@ if typing.TYPE_CHECKING:
     from .sessions import Session
 
 
+def _in_home(session: Session) -> bool:
+        
+        if session.ansip_screen.buffer_empty() is False:
+            session.ansip_screen.parse()
+
+        current_screen = session.ansip_screen.to_formatted_string()
+
+        # Check the title line
+        if "主功能表" not in current_screen[0]:
+            return False
+
+        # check status bar
+        match = re.search(pattern.regex_menu_status_bar, current_screen[-1])
+        if match is None:
+            return False
+
+        return True
+
+def _in_utility(session: Session) -> bool:
+        
+    if session.ansip_screen.buffer_empty() is False:
+        session.ansip_screen.parse()
+
+    current_screen = session.ansip_screen.to_formatted_string()
+
+    # Check the title line
+    if "工具程式" not in current_screen[0]:
+        return False
+
+    # check status bar
+    match = re.search(pattern.regex_menu_status_bar, current_screen[-1])
+    if match is None:
+        return False
+
+    return True
+
+
+def _in_board(session: Session) -> bool:
+        
+    if session.ansip_screen.buffer_empty() is False:
+        session.ansip_screen.parse()
+
+    current_screen = session.ansip_screen.to_formatted_string()
+
+    # check status bar
+    match = re.search(pattern.regex_board_status_bar, current_screen[-1])
+    if match is None:
+        return False
+
+    return True
+
+
 class Home:
     """Path is `/`."""
 
@@ -93,24 +145,6 @@ class UtilityInfo:
 
         self.__session = session
 
-    def __in_utility(self) -> bool:
-        
-        if self.__session.ansip_screen.buffer_empty() is False:
-            self.__session.ansip_screen.parse()
-
-        current_screen = self.__session.ansip_screen.to_formatted_string()
-
-        # Check the title line
-        if "工具程式" not in current_screen[0]:
-            return False
-
-        # check status bar
-        match = re.search(pattern.regex_menu_status_bar, current_screen[-1])
-        if match is None:
-            return False
-
-        return True
-
     async def back(self) -> None:
 
         # 請按任意鍵繼續
@@ -120,7 +154,7 @@ class UtilityInfo:
         while True:
             await self.__session.receive_and_put()
 
-            if self.__in_utility():
+            if _in_utility(self.__session):
                 break
 
 
@@ -132,21 +166,11 @@ class Favorite:
 
         self.__session = session
 
-    def __in_home(self) -> bool:
-        
-        if self.__session.ansip_screen.buffer_empty() is False:
             self.__session.ansip_screen.parse()
 
         current_screen = self.__session.ansip_screen.to_formatted_string()
 
-        # Check the title line
-        if "主功能表" not in current_screen[0]:
-            return False
 
-        # check status bar
-        match = re.search(pattern.regex_menu_status_bar, current_screen[-1])
-        if match is None:
-            return False
 
         return True
     
@@ -158,6 +182,6 @@ class Favorite:
         while True:
             await self.__session.receive_and_put()
 
-            if self.__in_home():
+            if _in_home(self.__session):
                 break
         

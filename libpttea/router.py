@@ -116,21 +116,7 @@ class Router:
     def in_home(self) -> bool:
         """Check if the current screen is the home menu."""
 
-        if self._session.ansip_screen.buffer_empty() is False:
-            self._session.ansip_screen.parse()
-
-        current_screen = self._session.ansip_screen.to_formatted_string()
-
-        # Check the title line
-        if "主功能表" not in current_screen[0]:
-            return False
-
-        # check status bar
-        match = re.search(pattern.regex_menu_status_bar, current_screen[-1])
-        if match is None:
-            return False
-
-        return True
+        return navigator._in_home(self._session)
 
     def init_home(self) -> None:
         """Initialize the path for the home menu."""
