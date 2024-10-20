@@ -12,6 +12,7 @@ import websockets.asyncio.client
 
 
 logger = logging.getLogger("websocket_client")
+logger_messages = logging.getLogger("websocket_client_messages")
 
 
 class WebSocketClient:
@@ -36,8 +37,8 @@ class WebSocketClient:
             async for message in self.connection:
                 self.receive_queue.put_nowait(message)
 
-                if logger.level <= logging.DEBUG:
-                    logger.debug(f"receive >>{message.decode("utf-8", errors="ignore")}<<\n")
+                if logger_messages.level <= logging.DEBUG:
+                    logger_messages.debug(f"Receive >>{message.decode("utf-8", errors="ignore")}<<\n")
 
         except websockets.ConnectionClosed as e:
             logger.debug(f"WebSocket ConnectionClosed: {e}")
@@ -52,7 +53,7 @@ class WebSocketClient:
             while True:
                 message = await self.send_queue.get()
                 await self.connection.send(message)
-                logger.debug(f"Sent: {message}")
+                logger_messages.debug(f"Sent >>{message}<<")
 
         else:
             logger.error("Cannot send message, WebSocket is not connected")
