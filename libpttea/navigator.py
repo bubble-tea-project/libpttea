@@ -80,12 +80,34 @@ class UtilityInfo:
 
         self.__session = session
 
+    def __in_utility(self) -> bool:
+        
+        if self.__session.ansip_screen.buffer_empty() is False:
+            self.__session.ansip_screen.parse()
+
+        current_screen = self.__session.ansip_screen.to_formatted_string()
+
+        # Check the title line
+        if "工具程式" not in current_screen[0]:
+            return False
+
+        # check status bar
+        match = re.search(pattern.regex_menu_status_bar, current_screen[-1])
+        if match is None:
+            return False
+
+        return True
+
     async def back(self) -> None:
 
         # 請按任意鍵繼續
         self.__session.send(pattern.NEW_LINE)
 
-        # wait utility loaded
-        # [呼叫器][31m打開 [m[19;21H
-        await self.__session.until_string_and_put("\x1b[m\x1b[19;21H")
-        self.__session.ansip_screen.parse()
+        # Wait for utility to load
+        while True:
+            await self.__session.receive_and_put()
+
+            if self.__in_utility():
+                break
+
+
