@@ -2,7 +2,7 @@
 libpttea.data_processor
 ~~~~~~~~~~~~~~~~~
 
-This module processes the pages created by the PTT function into data.
+This module processes the pages created by the PTT function into the desired data.
 """
 
 import re
