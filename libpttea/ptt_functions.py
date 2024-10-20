@@ -118,7 +118,7 @@ async def _skip_login_init(session: Session, del_duplicate=True, del_error_log=T
         session.send(pattern.NEW_LINE)
 
         # Wait for duplicate connections to be deleted
-        messages = await session.until_string("按任意鍵繼續", timeout=10)
+        messages = await session.until_string("按任意鍵繼續", timeout=15)
     elif "按任意鍵繼續" not in message:
         # no duplicate connections
         # and if not in first message

@@ -49,7 +49,7 @@ class Session:
 
         return raw_message
 
-    async def receive(self, timeout=3) -> str:
+    async def receive(self, timeout=5) -> str:
         """Receive the raw message, wait until all fragments are received,
           reassemble them, and return the UTF-8 decoded message"""
 
@@ -70,7 +70,7 @@ class Session:
 
         return await asyncio.wait_for(_receive(), timeout=timeout)
 
-    async def until_string(self, string: str, drop=False, timeout=5) -> str | list:
+    async def until_string(self, string: str, drop=False, timeout=10) -> str | list:
         """
         Wait until the specified `string` is found in the received message. 
         If `drop` is false, return all messages in the process.
@@ -98,7 +98,7 @@ class Session:
         else:
             return await asyncio.wait_for(_until_string(), timeout=timeout)
 
-    async def until_regex(self, regex: str | Pattern, drop=False, timeout=5) -> str | list:
+    async def until_regex(self, regex: str | Pattern, drop=False, timeout=10) -> str | list:
         """
         Wait until the received message matches the `regex`.
         If `drop` is false, return all messages in the process.
@@ -130,7 +130,7 @@ class Session:
         else:
             return await asyncio.wait_for(_until_regex(), timeout=timeout)
 
-    async def receive_and_put(self, timeout=3) -> str:
+    async def receive_and_put(self, timeout=5) -> str:
         """Call `receive()` and put the returned message into `ansip_screen`."""
 
         message = await self.receive(timeout)
@@ -138,7 +138,7 @@ class Session:
 
         return message
 
-    async def until_string_and_put(self, string: str, timeout=5) -> list:
+    async def until_string_and_put(self, string: str, timeout=10) -> list:
         """Call `until_string(drop=False)` and put the returned message into `ansip_screen`."""
 
         messages = await self.until_string(string, False, timeout)
@@ -147,7 +147,7 @@ class Session:
 
         return messages
 
-    async def until_regex_and_put(self, regex: str | Pattern, timeout=5) -> list:
+    async def until_regex_and_put(self, regex: str | Pattern, timeout=10) -> list:
         """Call `until_regex(drop=False)` and put the returned message into `ansip_screen`."""
 
         messages = await self.until_regex(regex, False, timeout)
