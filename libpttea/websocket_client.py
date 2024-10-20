@@ -40,7 +40,7 @@ class WebSocketClient:
                     logger.debug(f"receive >>{message.decode("utf-8", errors="ignore")}<<\n")
 
         except websockets.ConnectionClosed as e:
-            logger.info(f"WebSocket ConnectionClosed: {e}")
+            logger.debug(f"WebSocket ConnectionClosed: {e}")
 
             self.connected.clear()
             # ! raise
@@ -67,7 +67,7 @@ class WebSocketClient:
         self.handler_tasks.append(asyncio.create_task(self.__receive_handler()))
         self.handler_tasks.append(asyncio.create_task(self.__send_handler()))
 
-    def send(self, message: str) -> None:
+    def send(self, message: bytes) -> None:
         """Send messages to the WebSocket connection."""
 
         self.send_queue.put_nowait(message)
