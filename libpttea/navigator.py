@@ -31,9 +31,22 @@ class Home:
         await self.__session.until_string_and_put("《查看系統資訊》")
         self.__session.ansip_screen.parse()
 
+    async def _favorite(self) -> None:
+
+        # select index , 我 的 最愛
+        self.__session.send("f")
+        self.__session.send(pattern.RIGHT_ARROW)
+
+        # wait favorite loaded
+        # [30m列出全部 [31m(v/V)[30m已讀/未讀
+        await self.__session.until_string_and_put("\x1b[30m已讀/未讀")
+        self.__session.ansip_screen.parse()
+
     async def go(self, target: str) -> None:
 
         match target:
+            case "favorite":
+                await self._favorite()
             case "utility":
                 await self._utility()
             case _:
@@ -111,3 +124,40 @@ class UtilityInfo:
                 break
 
 
+
+class Favorite:
+    """Path is `/favorite`."""
+
+    def __init__(self, session: Session) -> None:
+
+        self.__session = session
+
+    def __in_home(self) -> bool:
+        
+        if self.__session.ansip_screen.buffer_empty() is False:
+            self.__session.ansip_screen.parse()
+
+        current_screen = self.__session.ansip_screen.to_formatted_string()
+
+        # Check the title line
+        if "主功能表" not in current_screen[0]:
+            return False
+
+        # check status bar
+        match = re.search(pattern.regex_menu_status_bar, current_screen[-1])
+        if match is None:
+            return False
+
+        return True
+    
+    async def back(self) -> None:
+        
+        self.__session.send(pattern.LEFT_ARROW)
+
+        # Wait for home to load
+        while True:
+            await self.__session.receive_and_put()
+
+            if self.__in_home():
+                break
+        

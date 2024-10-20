@@ -84,6 +84,8 @@ class Router:
         for current_location in reversed(needs):
 
             match current_location:
+                case "favorite":
+                    await navigator.Favorite(self._session).back()
                 case "utility":
                     await navigator.Utility(self._session).back()
                 case "info":

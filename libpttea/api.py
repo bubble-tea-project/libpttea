@@ -51,3 +51,14 @@ class API:
         查看 PTT 系統資訊"""
 
         return await ptt_functions.get_system_info(self.session)
+    
+    async def get_favorite_list(self) -> list:
+        """get the favorite list.
+
+        取得 "我的最愛" 清單"""
+
+        return await ptt_functions.get_favorite_list(self.session)
+
+
+
+

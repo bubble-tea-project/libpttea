@@ -31,3 +31,26 @@ regex_menu_status_bar = re.compile(R'''
     .+人,.+    # Intermediate part
     \[呼叫器\].+  # [呼叫器]打開
 ''', re.VERBOSE)
+
+
+# favorite_item normal
+# 3 ˇC_Chat       閒談 ◎[希洽] 從來不覺得開心過       爆!Satoman/nh50
+# r'(?P<index>\d+)\s+ˇ?(?P<board>\S+)\s+(?P<type>\S+)\s+◎(?P<describe>.*\S+)\s{2,}(?P<popularity>爆!|HOT|\d{1,2})?\s*(?P<moderator>\w+.+)'
+regex_favorite_item = re.compile(R'''
+    (?P<index>\d+)               # Captures the index, "3"
+    \s+                          # One or more spaces
+    ˇ?                           # Optional ˇ character
+    (?P<board>\S+)               # Board name , "C_Chat"
+    \s+                          # One or more spaces
+    (?P<type>\S+)                # Type , "閒談"
+    \s+◎                         # Intermediate
+    (?P<describe>.*\S+)          # Describe field , "[希洽] 從來不覺得開心過"
+    \s{2,}                       # Two or more spaces
+    (?P<popularity>爆!|HOT|\d{1,2})?  # Popularity, optional : "爆!", "HOT", or 1-2 digit number
+    \s*                          # Optional spaces
+    (?P<moderator>\w+.+)?        # Moderator, optional , "Satoman/nh50"
+''', re.VERBOSE)
+
+# favorite_item but no popularity and moderator
+# r'(?P<index>\d+)\s+ˇ?(?P<board>\S+)\s+(?P<type>\S+)\s+◎(?P<describe>.*\S+)'
+regex_favorite_item_describe = R"(?P<index>\d+)\s+ˇ?(?P<board>\S+)\s+(?P<type>\S+)\s+◎(?P<describe>.*\S+)"

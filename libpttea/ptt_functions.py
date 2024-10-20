@@ -7,6 +7,7 @@ This module implements various PTT functions.
 
 import asyncio
 import logging
+import re
 
 from . import data_processor, pattern
 from .sessions import Session
@@ -271,3 +272,60 @@ async def logout(session: Session, force=False) -> None:
 
     await session.websocket_client.close()
     session = None
+
+
+async def _get_favorite_list_pages(session: Session) -> list:
+    """get the favorite list pages"""
+
+    if session.router.location() != "/favorite":
+        await session.router.go("/favorite")
+
+    # pages
+    favorite_pages = []
+    favorite_pages.append(session.ansip_screen.to_formatted_string()) # current page
+
+    # check if more than 1 page
+    session.send(pattern.PAGE_DOWN)  # to next page
+    while True:  # wait page load
+        message = await session.receive_and_put()
+
+        if "\x1b[4;1H" in message:
+            # [4;1H
+            # more than 1 page , now in next page
+            session.ansip_screen.parse()
+
+            current_page = session.ansip_screen.to_formatted_string()
+            favorite_pages.append(current_page)
+
+            if current_page[-2] == "":
+                # next page only has 1 item
+                break
+            else:
+                session.send(pattern.PAGE_DOWN)  # to next page
+                continue
+
+        match = re.search(R"\d{1,2};1H>", message)
+        if match:
+            # Check if the "greater-than sign" has moved.
+            # Same page, finished.
+            break
+
+    # back to first page
+    session.send(pattern.PAGE_DOWN)
+
+    return favorite_pages
+
+
+async def get_favorite_list(session: Session) -> list:
+    """get the favorite list"""
+
+    logger.info("get_favorite_list")
+
+    if session is None:
+        raise RuntimeError("Not logged in yet.")
+
+    favorite_pages = await _get_favorite_list_pages(session)
+
+    favorite_list = data_processor.get_favorite_list(favorite_pages)
+
+    return favorite_list
