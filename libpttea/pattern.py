@@ -102,7 +102,6 @@ regex_post_item = re.compile(R'''
     (?P<index>\d+|★)                   # index , number or the '★' symbol
     \s+                                 # One or more spaces   
     (?P<label>\D)?                      # label, optional , "+" , "m" , or other   
-    \s*                                 # Optional spaces
     (?P<count>爆|[\s\d]{2}|XX|X\d)?     # count ,optional
     \s{0,1}                             # zero or one spaces   
     (?P<date>\d{1,2}/\d{1,2})           # date , in 'MM/DD' format
