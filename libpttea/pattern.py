@@ -83,13 +83,12 @@ regex_favorite_cursor_not_moved = re.compile(R'''
 ''', re.VERBOSE)
 
 
-# path in board
+# path at board
 # /favorite/C_Chat
-# r'^/favorite/\w+(?!post)'
-regex_path_in_board = re.compile(R'''
+# r'^/favorite/\w+$'
+regex_path_at_board = re.compile(R'''
     ^/favorite/     # "/favorite/"
-    \w+             # board
-    (?!post)        # ensure that 'post' does not appear after the board               
+    \w+$             # board and ensure is end               
 ''', re.VERBOSE)
 
 
