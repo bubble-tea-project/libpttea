@@ -81,6 +81,14 @@ class Router:
 
     async def __back(self, needs: list) -> None:
 
+        # when at Board
+        # /favorite/C_Chat
+        match = re.search(pattern.regex_path_in_board, self.location())
+        if match:
+            await navigator.Board(self._session).back()
+            needs.pop()
+            self._location = "/favorite/"
+
         for current_location in reversed(needs):
 
             match current_location:
@@ -103,8 +111,11 @@ class Router:
             match self.__path_current(self.location()):
                 case "/":
                     await navigator.Home(self._session).go(next_location)
+                case "favorite":
+                    await navigator.Favorite(self._session).go(next_location)
                 case "utility":
                     await navigator.Utility(self._session).go(next_location)
+                    self._location += f"/{next_location}"
                 case _:
                     raise NotImplementedError(f"Not supported yet , from ={self.location()} , go ={next_location}.")
 

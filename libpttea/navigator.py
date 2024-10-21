@@ -10,32 +10,33 @@ from __future__ import annotations
 import re
 import typing
 
-from . import pattern
+from . import pattern, ptt_action
 
 if typing.TYPE_CHECKING:
     from .sessions import Session
 
 
 def _in_home(session: Session) -> bool:
-        
-        if session.ansip_screen.buffer_empty() is False:
-            session.ansip_screen.parse()
 
-        current_screen = session.ansip_screen.to_formatted_string()
+    if session.ansip_screen.buffer_empty() is False:
+        session.ansip_screen.parse()
 
-        # Check the title line
-        if "主功能表" not in current_screen[0]:
-            return False
+    current_screen = session.ansip_screen.to_formatted_string()
 
-        # check status bar
-        match = re.search(pattern.regex_menu_status_bar, current_screen[-1])
-        if match is None:
-            return False
+    # Check the title line
+    if "主功能表" not in current_screen[0]:
+        return False
 
-        return True
+    # check status bar
+    match = re.search(pattern.regex_menu_status_bar, current_screen[-1])
+    if match is None:
+        return False
+
+    return True
+
 
 def _in_utility(session: Session) -> bool:
-        
+
     if session.ansip_screen.buffer_empty() is False:
         session.ansip_screen.parse()
 
@@ -54,7 +55,7 @@ def _in_utility(session: Session) -> bool:
 
 
 def _in_board(session: Session) -> bool:
-        
+
     if session.ansip_screen.buffer_empty() is False:
         session.ansip_screen.parse()
 
@@ -158,7 +159,6 @@ class UtilityInfo:
                 break
 
 
-
 class Favorite:
     """Path is `/favorite`."""
 
@@ -166,16 +166,49 @@ class Favorite:
 
         self.__session = session
 
+    async def _go_board(self) -> None:
+
+        # go board
+        self.__session.send(pattern.RIGHT_ARROW)
+
+        # wait for board loaded
+        # 動畫播放中…可按 q,Ctrl-C 或其它任意鍵停止
+        # 請按任意鍵繼續
+        check_enter_board = ["請按任意鍵繼續", "任意鍵停止"]
+
+        while True:
+            message = await self.__session.receive_and_put()
             self.__session.ansip_screen.parse()
 
-        current_screen = self.__session.ansip_screen.to_formatted_string()
+            # skip - Enter board screen
+            if any(_ in message for _ in check_enter_board):
+                self.__session.send(pattern.RIGHT_ARROW)
+                continue
 
+            # if already in board
+            if _in_board(self.__session):
+                break
 
+        # go to the latest
+        self.__session.send(pattern.END)
 
-        return True
-    
+        # wait if cursor has moved.
+        try:
+            await self.__session.until_regex_and_put(R">.+\x1b\[")
+        except TimeoutError:
+            # already latest
+            pass
+
+        self.__session.ansip_screen.parse()
+        return
+
+    async def go(self, target: str) -> None:
+
+        await ptt_action.search_board(self.__session, target)
+        await self._go_board()
+
     async def back(self) -> None:
-        
+
         self.__session.send(pattern.LEFT_ARROW)
 
         # Wait for home to load
@@ -184,4 +217,20 @@ class Favorite:
 
             if _in_home(self.__session):
                 break
-        
+
+
+class Board:
+    """Path is `/favorite/board`."""
+
+    def __init__(self, session: Session) -> None:
+
+        self.__session = session
+
+    async def back(self) -> None:
+
+        self.__session.send(pattern.LEFT_ARROW)
+
+        # wait favorite loaded
+        # [30m列出全部 [31m(v/V)[30m已讀/未讀
+        await self.__session.until_string_and_put("\x1b[30m已讀/未讀")
+        self.__session.ansip_screen.parse()

@@ -282,7 +282,7 @@ async def _get_favorite_list_pages(session: Session) -> list:
 
     # pages
     favorite_pages = []
-    favorite_pages.append(session.ansip_screen.to_formatted_string()) # current page
+    favorite_pages.append(session.ansip_screen.to_formatted_string())  # current page
 
     # check if more than 1 page
     session.send(pattern.PAGE_DOWN)  # to next page
@@ -329,3 +329,32 @@ async def get_favorite_list(session: Session) -> list:
     favorite_list = data_processor.get_favorite_list(favorite_pages)
 
     return favorite_list
+
+
+async def _get_board_page(session: Session, board: str) -> list:
+    """get the board pages"""
+
+    if session.router.location() != f"/favorite/{board}":
+        await session.router.go(f"/favorite/{board}")
+
+    board_page = session.ansip_screen.to_formatted_string()
+
+    return board_page
+
+
+async def get_latest_post_index(session: Session, board: str) -> int:
+    """get the latest post index"""
+
+    logger.info("get_latest_post_index")
+
+    if session is None:
+        raise RuntimeError("Not logged in yet.")
+
+    if board == "":
+        raise ValueError("board is empty")
+
+    board_page = await _get_board_page(session, board)
+
+    latest_post_index = data_processor.get_latest_post_index(board_page)
+
+    return latest_post_index

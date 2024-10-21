@@ -51,7 +51,7 @@ class API:
         查看 PTT 系統資訊"""
 
         return await ptt_functions.get_system_info(self.session)
-    
+
     async def get_favorite_list(self) -> list:
         """get the favorite list.
 
@@ -59,6 +59,10 @@ class API:
 
         return await ptt_functions.get_favorite_list(self.session)
 
+    async def get_latest_post_index(self, board: str) -> int:
+        """get the latest post index.
+        
+        取得最新的文章編號
+        """
 
-
-
+        return await ptt_functions.get_latest_post_index(self.session, board)

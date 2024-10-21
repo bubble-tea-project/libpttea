@@ -60,3 +60,32 @@ def get_favorite_list(favorite_pages: list) -> list:
                 favorite_list.append(item)
 
     return favorite_list
+
+
+def _process_board_line(line: str) -> dict | None:
+
+    match = re.search(pattern.regex_post_item, line)
+    if match:
+        # extract all named groups
+        return match.groupdict()
+    else:
+        return None
+
+
+def get_latest_post_index(board_page: list) -> int:
+    """Extract the latest post index from the board page."""
+
+    content = board_page[3:23]
+
+    # Start from the latest (bottom)
+    for line in reversed(content):
+        item = _process_board_line(line)
+
+        if item is None:
+            raise RuntimeError()
+
+        match = re.search(R"\d+", item["index"])
+        if match:
+            return int(item["index"])
+
+    raise RuntimeError()
