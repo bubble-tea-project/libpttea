@@ -10,7 +10,7 @@ from __future__ import annotations
 import re
 import typing
 
-from . import pattern
+from . import pattern, navigator
 
 if typing.TYPE_CHECKING:
     from .sessions import Session
@@ -62,3 +62,36 @@ async def search_board(session: Session, board: str) -> None:
         match = re.search(pattern.regex_favorite_cursor_moved, message)
         if match:
             break
+
+
+async def search_index(session: Session, index: int) -> None:
+
+    # go to the latest
+    session.send(pattern.END)
+
+    # find post
+    session.send(str(index))
+    await session.until_string_and_put("跳至第幾項")
+    session.send(pattern.NEW_LINE)
+
+    # Check if found
+    while True:
+        await session.receive_and_put()
+        session.ansip_screen.parse()
+
+        if navigator._in_board(session):
+            # found in different page
+            break
+
+        # check status bar
+        current_screen = session.ansip_screen.to_formatted_string()
+        if current_screen[-1] == "":
+            # found in same page
+            break
+
+    # recheck
+    current_screen = session.ansip_screen.to_formatted_string()
+    regex_post_index = R"^(>| )" + str(index)  # >351095 + 910/21
+    if not any([re.search(regex_post_index, line) for line in current_screen]):
+        # same page , but not found
+        raise RuntimeError("post index not found")

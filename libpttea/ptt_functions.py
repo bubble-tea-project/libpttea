@@ -9,7 +9,7 @@ import asyncio
 import logging
 import re
 
-from . import data_processor, pattern
+from . import data_processor, pattern, ptt_action
 from .sessions import Session
 from .websocket_client import WebSocketClient
 
@@ -358,3 +358,69 @@ async def get_latest_post_index(session: Session, board: str) -> int:
     latest_post_index = data_processor.get_latest_post_index(board_page)
 
     return latest_post_index
+
+
+async def _get_board_pages_by_range(session: Session, board: str, start: int, stop: int) -> list:
+    """Get the board pages by range"""
+
+    def __get_top_index(screen):
+
+        top_line = screen[3]
+
+        top_element = data_processor._process_board_line(top_line)
+        if top_element is None:
+            raise RuntimeError()
+
+        return int(top_element["index"])
+
+    if session.router.location() != f"/favorite/{board}":
+        await session.router.go(f"/favorite/{board}")
+
+    # find index
+    await ptt_action.search_index(session, stop)
+
+    # pages
+    board_pages = []
+
+    # add current
+    current_screen = session.ansip_screen.to_formatted_string()
+    board_pages.append(current_screen)
+
+    # check top index in screen
+    top_index = __get_top_index(current_screen)
+
+    # if pages not enough
+    while top_index > start:
+        # go to previos page
+        session.send(pattern.PAGE_UP)
+
+        # wait new page loaded
+        # '[4;1H' at end
+        await session.until_regex_and_put(R".+\x1B\[4;1H$")
+
+        session.ansip_screen.parse()
+        current_screen = session.ansip_screen.to_formatted_string()
+        board_pages.append(current_screen)
+
+        # check top index in screen
+        top_index = __get_top_index(current_screen)
+
+    return board_pages
+
+
+async def get_post_list_by_range(session: Session, board: str, start: int, stop: int) -> list:
+    """Get the post list by range; the `start` < `stop` is required."""
+
+    logger.info("get_post_list")
+
+    if session is None:
+        raise RuntimeError("Not logged in yet.")
+
+    if start >= stop:
+        raise ValueError("parameter error , `start` < `stop` is required")
+
+    board_pages = await _get_board_pages_by_range(session, board, start, stop)
+
+    post_list = data_processor.get_post_list_by_range(board_pages, start, stop)
+
+    return post_list

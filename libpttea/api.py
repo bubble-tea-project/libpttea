@@ -61,8 +61,16 @@ class API:
 
     async def get_latest_post_index(self, board: str) -> int:
         """get the latest post index.
-        
+
         取得最新的文章編號
         """
 
         return await ptt_functions.get_latest_post_index(self.session, board)
+
+    async def get_post_list(self, board: str, start: int, stop: int) -> list:
+        """Get the post list by range; the `start` < `stop` is required.
+
+        取得範圍內的文章列表
+        """
+
+        return await ptt_functions.get_post_list_by_range(self.session, board, start, stop)
