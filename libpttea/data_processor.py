@@ -84,6 +84,7 @@ def get_latest_post_index(board_page: list) -> int:
         if item is None:
             raise RuntimeError()
 
+        # skip pin post 
         match = re.search(R"\d+", item["index"])
         if match:
             return int(item["index"])
