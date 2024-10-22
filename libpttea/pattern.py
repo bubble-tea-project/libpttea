@@ -40,6 +40,41 @@ regex_board_status_bar = re.compile(R'''
     進板畫面       # '進板畫面'
 ''', re.VERBOSE)
 
+# The post has no content; it has already been deleted.
+# r'此文章無內容.+按任意鍵繼續'
+regex_post_no_content = re.compile(R'''
+    此文章無內容        # 
+    .+            # Intermediate part
+    按任意鍵繼續       # 
+''', re.VERBOSE)
+
+
+# 瀏覽 第 1/4 頁 ( 12%)  目前顯示: 第 01~25 行                                (y)回應(X%)推文(h)說明(← )離開
+# r'瀏覽.+目前顯示.+說明.+離開'
+regex_post_status_bar_simple = re.compile(R'''
+    瀏覽         # 
+    .+          # Intermediate part
+    目前顯示      # 
+    .+          # Intermediate part
+    說明         #
+    .+          # Intermediate part
+    離開         #                                                                                                                         
+''', re.VERBOSE)
+
+# 瀏覽 第 1/4 頁 ( 12%)  目前顯示: 第 01~25 行                                (y)回應(X%)推文(h)說明(← )離開
+# r'瀏覽.+\(\s{0,2}(?P<progress>\d+)%\).+第\s(?P<start>\d+)~(?P<end>\d+)\s行.+離開'
+regex_post_status_bar = re.compile(R'''
+    瀏覽                                 # 
+    .+                                  # Intermediate part
+    \(\s{0,2}(?P<progress>\d+)%\)       # '( 12%)' , progress
+    .+                                  # Intermediate part
+    第                                  #   
+    \s(?P<start>\d+)                    # start line
+    ~                                   # Intermediate part
+    (?P<end>\d+)                        # end line    
+    \s行.+離開                           #                                                                                                                                                    
+''', re.VERBOSE)
+
 
 # favorite_item normal
 # 3 ˇC_Chat       閒談 ◎[希洽] 從來不覺得開心過       爆!Satoman/nh50
@@ -91,6 +126,15 @@ regex_path_at_board = re.compile(R'''
     \w+$             # board and ensure is end               
 ''', re.VERBOSE)
 
+# path at post index
+# /favorite/C_Chat/335045
+# r'^/favorite/\w+/\d+'
+regex_path_at_post_index = re.compile(R'''
+    ^/favorite/     # "/favorite/"
+    \w+             # board
+    /\d+            # "/335045" ,  post index
+''', re.VERBOSE)
+
 
 # post_item
 # https://www.ptt.cc/bbs/PttNewhand/M.1286283859.A.F6D.html
@@ -121,3 +165,17 @@ regex_incomplete_ansi_escape = re.compile(R'''
     )?$     # at end ,zero and one times           
 ''', re.VERBOSE)
 
+
+# post reply
+# (?P<type>[推→噓])\s(?P<author>\w+):\s(?P<reply>.+)\s(?P<ip>(?:\d{1,3}\.?){4})?\s(?P<datetime>\d{1,2}\/\d{1,2}\s\d{2}:\d{2})
+regex_post_reply = re.compile(R'''
+    (?P<type>[推→噓])     # reply type
+    \s   #                            
+    (?P<author>\w+) # author
+    :\s                               
+    (?P<reply>.+)   # reply content
+    \s
+    (?P<ip>(?:\d{1,3}\.?){4})?  # ip ,optional
+    \s
+    (?P<datetime>\d{1,2}\/\d{1,2}\s\d{2}:\d{2}) # datetime                                                                                                                   
+''', re.VERBOSE)

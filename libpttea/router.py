@@ -81,14 +81,6 @@ class Router:
 
     async def __back(self, needs: list) -> None:
 
-        # when at Board
-        # /favorite/C_Chat
-        match = re.search(pattern.regex_path_in_board, self.location())
-        if match:
-            await navigator.Board(self._session).back()
-            needs.pop()
-            self._location = "/favorite/"
-
         for current_location in reversed(needs):
 
             match current_location:
@@ -99,7 +91,18 @@ class Router:
                 case "info":
                     await navigator.UtilityInfo(self._session).back()
                 case _:
-                    raise NotImplementedError(f"Not supported yet , back from ={current_location}.")
+                    # when at Board
+                    # /favorite/C_Chat
+                    if re.search(pattern.regex_path_at_board, self.location()):
+                        await navigator.Board(self._session).back()
+
+                    # when at Post index
+                    # /favorite/C_Chat/335045
+                    elif re.search(pattern.regex_path_at_post_index, self.location()):
+                        await navigator.Post(self._session).back()
+
+                    else:
+                        raise NotImplementedError(f"Not supported yet , back from ={current_location}.")
             #
             needs.pop()
             self._location = "/" + "/".join(needs)
@@ -117,7 +120,13 @@ class Router:
                     await navigator.Utility(self._session).go(next_location)
                     self._location += f"/{next_location}"
                 case _:
-                    raise NotImplementedError(f"Not supported yet , from ={self.location()} , go ={next_location}.")
+                    # when at Board
+                    # /favorite/C_Chat
+                    if re.search(pattern.regex_path_at_board, self.location()):
+                        # go , /favorite/C_Chat/335045
+                        await navigator.Board(self._session).go(next_location)
+                    else:
+                        raise NotImplementedError(f"Not supported yet , from ={self.location()} , go ={next_location}.")
 
             if self.location() == "/":
                 self._location += f"{next_location}"

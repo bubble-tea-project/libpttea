@@ -12,6 +12,8 @@ import typing
 from . import ptt_functions
 
 if typing.TYPE_CHECKING:
+    from typing import AsyncGenerator
+
     from .sessions import Session
 
 
@@ -74,3 +76,11 @@ class API:
         """
 
         return await ptt_functions.get_post_list_by_range(self.session, board, start, stop)
+
+    async def get_post(self, board: str, index: int) -> AsyncGenerator[tuple[str, list]]:
+        """Get the post, return an Asynchronous Generator that 
+        yields post data as a `tuple(content_html, post_replies)`.
+
+        取得文章資料"""
+
+        return ptt_functions.get_post(self.session, board, index)

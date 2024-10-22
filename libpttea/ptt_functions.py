@@ -5,13 +5,20 @@ libpttea.ptt_functions
 This module implements various PTT functions.
 """
 
+from __future__ import annotations
 import asyncio
 import logging
 import re
+import typing
+
+import ansiparser
 
 from . import data_processor, pattern, ptt_action
 from .sessions import Session
 from .websocket_client import WebSocketClient
+
+if typing.TYPE_CHECKING:
+    from typing import AsyncGenerator
 
 
 logger = logging.getLogger("libpttea")
@@ -424,3 +431,79 @@ async def get_post_list_by_range(session: Session, board: str, start: int, stop:
     post_list = data_processor.get_post_list_by_range(board_pages, start, stop)
 
     return post_list
+
+
+async def _get_post_page(session: Session, old_post_status_bar: str) -> list:
+    """get a post page"""
+
+    # wait post page loaded
+    while True:
+        await session.receive_and_put()
+        session.ansip_screen.parse()
+        current_screen = session.ansip_screen.to_formatted_string()
+
+        # check status bar
+        post_status_bar = current_screen[-1]
+        match = re.search(pattern.regex_post_status_bar, current_screen[-1])
+        if (match and
+            post_status_bar != old_post_status_bar):
+            # check status bar is complete and differs from the previous one
+            old_post_status_bar = post_status_bar
+            return current_screen
+
+
+async def _get_full_post(session: Session, board: str, index: int) -> AsyncGenerator[list]:
+    """get a complete post that consists of multiple pages, 
+    return an asynchronous generator that yields each raw page."""
+
+    def __extract_progress(post_status_bar):
+
+        match = re.search(pattern.regex_post_status_bar, post_status_bar)
+        if match:
+            return int(match.group("progress"))
+        else:
+            raise RuntimeError("Extract progress from the status bar error.")
+
+    if session.router.location() != f"/favorite/{board}/{index}":
+        await session.router.go(f"/favorite/{board}/{index}")
+
+    # yield the current page
+    current_screen = session.ansip_screen.to_formatted_string()
+    yield session.ansip_screen.get_parsed_screen()
+
+    progress = __extract_progress(current_screen[-1])
+
+    # until the post loading is complete
+    while progress < 100:
+        old_post_status_bar = current_screen[-1]
+        session.send(pattern.PAGE_DOWN)  # next page
+
+        # yield the new page
+        current_screen = await _get_post_page(session, old_post_status_bar)
+        yield session.ansip_screen.get_parsed_screen()
+
+        progress = __extract_progress(current_screen[-1])
+
+
+async def get_post(session: Session, board: str, index: int) -> AsyncGenerator[tuple[str, list]]:
+    """Get the post, return an Asynchronous Generator that 
+    yields post data as a `tuple(content_html, post_replies)`."""
+
+    logger.info("get_post")
+
+    if session is None:
+        raise RuntimeError("Not logged in yet.")
+
+    last_page = []
+    different_index = 0
+    async for raw_page in _get_full_post(session, board, index):
+
+        page = ansiparser.from_screen(raw_page).to_formatted_string()
+
+        if last_page:
+            different_index = data_processor.get_different_index(page, last_page)
+
+        last_page = page
+
+        content_html, post_replies = data_processor.get_post_page(raw_page[different_index:])
+        yield content_html, post_replies

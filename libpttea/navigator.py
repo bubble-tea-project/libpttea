@@ -69,6 +69,25 @@ def _in_board(session: Session) -> bool:
     return True
 
 
+def _in_post(session: Session) -> bool:
+
+    if session.ansip_screen.buffer_empty() is False:
+        session.ansip_screen.parse()
+
+    current_screen = session.ansip_screen.to_formatted_string()
+
+    # check status bar
+    match_no_content = re.search(pattern.regex_post_no_content, current_screen[-1])
+    if match_no_content:
+        raise RuntimeError("The post has no content; it has already been deleted.")
+
+    match = re.search(pattern.regex_post_status_bar_simple, current_screen[-1])
+    if match:
+        return True
+
+    return False
+
+
 class Home:
     """Path is `/`."""
 
@@ -226,6 +245,25 @@ class Board:
 
         self.__session = session
 
+    async def _post_by_index(self, index: int) -> None:
+
+        # find index
+        await ptt_action.search_index(self.__session, index)
+
+        # go to post
+        self.__session.send(pattern.RIGHT_ARROW)
+
+        # wait post loaded
+        while True:
+            await self.__session.receive_and_put()
+
+            if _in_post(self.__session):
+                break
+
+    async def go(self, target: int) -> None:
+
+        await self._post_by_index(target)
+
     async def back(self) -> None:
 
         self.__session.send(pattern.LEFT_ARROW)
@@ -234,3 +272,22 @@ class Board:
         # [30m列出全部 [31m(v/V)[30m已讀/未讀
         await self.__session.until_string_and_put("\x1b[30m已讀/未讀")
         self.__session.ansip_screen.parse()
+
+
+class Post:
+    """Path is `/favorite/board/post`."""
+
+    def __init__(self, session: Session) -> None:
+
+        self.__session = session
+
+    async def back(self) -> None:
+
+        self.__session.send(pattern.LEFT_ARROW)
+
+        # wait Board loaded
+        while True:
+            await self.__session.receive_and_put()
+
+            if _in_board(self.__session):
+                break
