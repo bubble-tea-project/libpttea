@@ -118,7 +118,6 @@ class Router:
                     await navigator.Favorite(self._session).go(next_location)
                 case "utility":
                     await navigator.Utility(self._session).go(next_location)
-                    self._location += f"/{next_location}"
                 case _:
                     # when at Board
                     # /favorite/C_Chat
