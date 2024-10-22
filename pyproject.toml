@@ -11,12 +11,10 @@ repository = "https://github.com/bubble-tea-project/libpttea"
 [tool.poetry.dependencies]
 python = "^3.10"
 ansiparser = "^1.2.0"
-websocket-client = "^1.8.0"
+websockets = "^13.1"
 
 [tool.poetry.group.dev.dependencies]
 ansiparser = "^1.2.0"
-websocket-client = "^1.8.0"
-beautifulsoup4 = "^4.12.3"
 websockets = "^13.1"
 
 
