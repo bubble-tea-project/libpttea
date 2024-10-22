@@ -91,7 +91,7 @@ async def search_index(session: Session, index: int) -> None:
 
     # recheck
     current_screen = session.ansip_screen.to_formatted_string()
-    regex_post_index = R"^(>| )" + str(index)  # >351095 + 910/21
+    regex_post_index = R"^(>| )\s?" + str(index)  # '>351769 +  10/22 kannax       □  [Vtub] '
     if not any([re.search(regex_post_index, line) for line in current_screen]):
         # same page , but not found
         raise RuntimeError("post index not found")
