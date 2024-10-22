@@ -111,3 +111,13 @@ regex_post_item = re.compile(R'''
 ''', re.VERBOSE)
 
 
+# incomplete ANSI escape
+# r'.+\x1b(?:\[[^\x40-\x7E]*)?$'
+regex_incomplete_ansi_escape = re.compile(R'''
+    .*     # any
+    \x1b   # start with '\x1B'                                   
+    (?:
+        \[[^\x40-\x7E]*     # Final characters that are not valid terminators                            
+    )?$     # at end ,zero and one times           
+''', re.VERBOSE)
+

@@ -14,6 +14,7 @@ import typing
 
 import ansiparser
 
+from . import pattern
 from .router import Router
 from .websocket_client import WebSocketClient
 
@@ -64,6 +65,10 @@ class Session:
 
                 try:
                     message = b"".join(message_frames).decode('utf-8')
+                    if re.search(pattern.regex_incomplete_ansi_escape, message):
+                        # message contains an incomplete ANSI escape sequence
+                        continue
+
                     return message
                 except UnicodeDecodeError:
                     continue
