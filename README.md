@@ -7,6 +7,7 @@ A Python library that encapsulates various PTT functions.
 
 [![PyPI - Stable Version](https://img.shields.io/pypi/v/libpttea?label=stable)](https://pypi.org/project/libpttea/#history)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/libpttea)](https://pypi.org/project/libpttea/)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/bubble-tea-project/libpttea/docs.yml?label=docs)](https://github.com/bubble-tea-project/libpttea/actions/workflows/docs.yml)
 [![GitHub License](https://img.shields.io/github/license/bubble-tea-project/libpttea)](https://github.com/bubble-tea-project/libpttea/blob/main/LICENSE)
 
 </div>
@@ -17,9 +18,9 @@ LibPttea 是一個 Python library，目的在封裝各種 PTT 功能操作，旨
 ## ✨ Supported
 - login
 - logout
-- system_info
-- favorite_list
-- post_list
+- get_system_info
+- get_favorite_list
+- get_post_list
 - get_post
 - 🔨 in development...
 
@@ -37,26 +38,36 @@ poetry add libpttea
 
 ## 🎨 Usage
 ```python
+import asyncio
 import libpttea
 
 PTT_ACCOUNT = "PTT ID"
 PTT_PASSWORD = "PTT 密碼"
-lib_pttea = libpttea.login(PTT_ACCOUNT,PTT_PASSWORD)
 
-system_info = lib_pttea.system_info()
+async def main():
 
-lib_pttea.logout()
+    lib_pttea = await libpttea.login(PTT_ACCOUNT,PTT_PASSWORD)
 
-print(system_info)
-# ['您現在位於 批踢踢實業坊 (140.112.172.11)', '系統負載: 輕輕鬆鬆', 
-# '線上人數: 30602/175000', 'ClientCode: 02000023', '起始時間: 09/23/2024 17:49:24', 
-# '編譯時間: Sun Jun  4 23:41:30 CST 2023', '編譯版本: https://github.com/ptt/pttbbs.git 0447b25c 8595c8b4 M']
+    system_info = await lib_pttea.get_system_info()
+    print(system_info)
+    # ['您現在位於 批踢踢實業坊 (140.112.172.11)', 
+    # '系統負載: 輕輕鬆鬆', 
+    # '線上人數: 27492/175000', 
+    # 'ClientCode: 02000023', 
+    # '起始時間: 10/20/2024 05:15:40', 
+    # '編譯時間: Sun Jun  4 23:41:30 CST 2023', 
+    # '編譯版本: https://github.com/ptt/pttbbs.git 0447b25c 8595c8b4 M']
+    
+    await lib_pttea.logout()
 
+# run the coroutine 
+asyncio.run(main())
 ```
 
 
 ## 🔗 Links
-- 
+<!-- - [LibPttea Documentation](https://bubble-tea-project.github.io/libpttea/) -->
+
 
 ## 📜 License
 [![GitHub License](https://img.shields.io/github/license/bubble-tea-project/libpttea)](https://github.com/bubble-tea-project/libpttea/blob/main/LICENSE)
