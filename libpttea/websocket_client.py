@@ -38,7 +38,7 @@ class WebSocketClient:
                 self.receive_queue.put_nowait(message)
 
                 if logger_messages.level <= logging.DEBUG:
-                    logger_messages.debug(f"Receive >>{message.decode("utf-8", errors="ignore")}<<\n")
+                    logger_messages.debug(f"Receive >>{message.decode('utf-8', errors='ignore')}<<\n")
 
         except websockets.ConnectionClosed as e:
             logger.debug(f"WebSocket ConnectionClosed: {e}")
