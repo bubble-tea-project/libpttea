@@ -25,11 +25,12 @@ PAGE_DOWN = "\x1b[6~"
 
 # regular expression
 
-# r'\[\d+\/\d+\s\S+\s\d+:\d+\].+人,.+\[呼叫器\].+'
+# r'\[\d+\/\d+\s\S+\s\d+:\d+\].+人,.+\[呼叫器\](?:打開|拔掉|防水|好友)'
 regex_menu_status_bar = re.compile(R'''
     \[\d+\/\d+\s\S+\s\d+:\d+\]    # [0/00 星期五 22:00]
     .+人,.+    # Intermediate part
-    \[呼叫器\].+  # [呼叫器]打開
+    \[呼叫器\]  # [呼叫器]打開
+    (?:打開|拔掉|防水|好友)     #                               
 ''', re.VERBOSE)
 
 # r'文章選讀.+進板畫面'
