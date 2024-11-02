@@ -78,10 +78,18 @@ class API:
 
         await ptt_functions.logout(self.session, force=force)
 
-    async def get_system_info(self) -> list:
-        """get the PTT system info. 
+    async def get_system_info(self) -> list[str]:
+        """
+        Get the PTT system info. 
 
-        查看 PTT 系統資訊"""
+        查看 PTT 系統資訊
+
+        Returns
+        -------
+        list[str]
+            Return a list of strings that contains the PTT system information.
+
+        """
 
         return await ptt_functions.get_system_info(self.session)
 
