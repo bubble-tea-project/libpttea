@@ -93,10 +93,26 @@ class API:
 
         return await ptt_functions.get_system_info(self.session)
 
-    async def get_favorite_list(self) -> list:
-        """get the favorite list.
+    async def get_favorite_list(self) -> list[dict]:
+        """
+        Get the favorite list.
 
-        取得 "我的最愛" 清單"""
+        取得 "我的最愛" 清單
+
+        Returns
+        -------
+        list[dict]
+            Return a list of dict that contains favorite items.
+
+            - favorite items , dict like
+                {'index': '',
+                'board': '',
+                'type': '',
+                'describe': '',
+                'popularity': '',
+                'moderator': ''}
+
+        """
 
         return await ptt_functions.get_favorite_list(self.session)
 

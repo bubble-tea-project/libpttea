@@ -292,8 +292,8 @@ async def _get_favorite_list_pages(session: Session) -> list:
     while True:  # wait page load
         message = await session.receive_and_put()
 
-        if "\x1b[4;1H" in message:
-            # [4;1H
+        if re.search(R".+\x1b\[4;1H$", message):
+            # [4;1H at end
             # more than 1 page , now in next page
             session.ansip_screen.parse()
 
@@ -301,14 +301,14 @@ async def _get_favorite_list_pages(session: Session) -> list:
             favorite_pages.append(current_page)
 
             if current_page[-2] == "":
-                # next page only has 1 item
+                # If the next page is last , it will contain empty lines.
                 break
             else:
                 session.send(pattern.PAGE_DOWN)  # to next page
                 continue
 
-        match = re.search(R"\d{1,2};1H>", message)
-        if match:
+        # if page does not have an empty line.
+        if re.search(R"\d{1,2};1H>", message):
             # Check if the "greater-than sign" has moved.
             # Same page, finished.
             break

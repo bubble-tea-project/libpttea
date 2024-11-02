@@ -20,7 +20,14 @@ def get_system_info(system_info_page: list) -> list:
 
 def _process_favorite_line(line: str) -> dict:
 
-    item = {}
+    favorite_item = {
+        'index': '',
+        'board': '',
+        'type': '',
+        'describe': '',
+        'popularity': '',
+        'moderator': ''
+    }
 
     # Check if the line is a separator line
     separator = "------------------------------------------"
@@ -28,21 +35,25 @@ def _process_favorite_line(line: str) -> dict:
 
         match = re.search(R"(?P<index>\d+)", line)
         if match:
-            item["index"] = match.group("index")
-            item["board"] = "------------"
+            favorite_item["index"] = match.group("index")
+            favorite_item["board"] = "------------"
+        else:
+            raise RuntimeError("Failed to process the favorite line")
 
     else:
-        # Try matching with the first regex (which includes popularity and moderator)
         match = re.search(pattern.regex_favorite_item, line)
 
         if match is None:
+            # use regex that excludes popularity and moderator.
             match = re.search(pattern.regex_favorite_item_describe, line)
 
         if match:
             # extract all named groups
-            item.update(match.groupdict())
+            favorite_item.update(match.groupdict(default=""))
+        else:
+            raise RuntimeError("Failed to process the favorite line")
 
-    return item
+    return favorite_item
 
 
 def get_favorite_list(favorite_pages: list) -> list:
@@ -54,10 +65,10 @@ def get_favorite_list(favorite_pages: list) -> list:
         content = page[3:23]
 
         for line in content:
-            item = _process_favorite_line(line)
-            # Only add the item if it's not empty
-            if item:
-                favorite_list.append(item)
+            # Skip empty lines
+            if line != "":
+                favorite_item = _process_favorite_line(line)
+                favorite_list.append(favorite_item)
 
     return favorite_list
 
