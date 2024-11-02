@@ -67,7 +67,14 @@ class API:
     async def logout(self, force=False) -> None:
         """Log out from PTT.
 
-        登出 PTT"""
+        登出 PTT
+
+        Parameters
+        ----------
+        force : bool, default False
+            If `force` is true, ignore the `TimeoutError`.
+
+        """
 
         await ptt_functions.logout(self.session, force=force)
 

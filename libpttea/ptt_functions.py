@@ -266,13 +266,14 @@ async def logout(session: Session, force=False) -> None:
         logger.debug("logout timeout")
 
         if force is False:
-            raise RuntimeError("logout failed")
+            raise RuntimeError("logout timeout")
         else:
-            logger.info("force logout")
+            logger.info("logout timeout , force logout")
 
-    logger.info("Logged out")
+    finally:
+        logger.info("Logged out")
+        await session.websocket_client.close()
 
-    await session.websocket_client.close()
     session = None
 
 
