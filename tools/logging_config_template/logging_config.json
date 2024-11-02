@@ -1,0 +1,45 @@
+{
+    "version": 1,
+    "disable_existing_loggers": false,
+    "formatters": {
+        "default": {
+            "format": "%(name)s - %(levelname)s - %(message)s"
+        }
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "default",
+            "level": "INFO",
+            "stream": "ext://sys.stdout"
+        },
+        "log_websocket": {
+            "class": "logging.FileHandler",
+            "formatter": "default",
+            "level": "DEBUG",
+            "filename": "./_tests/websocket.log",
+            "mode": "w",
+            "encoding": "utf8"
+        }
+    },
+    "loggers": {
+        "libpttea": {
+            "level": "DEBUG",
+            "handlers": [
+                "console"
+            ]
+        },
+        "websocket_client": {
+            "level": "DEBUG",
+            "handlers": [
+                "console"
+            ]
+        },
+        "websocket_client_messages": {
+            "level": "DEBUG",
+            "handlers": [
+                "log_websocket"
+            ]
+        }
+    }
+}
