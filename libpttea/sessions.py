@@ -26,7 +26,7 @@ class Session:
 
     def __init__(self) -> None:
 
-        self.websocket_client: WebSocketClient = None
+        self.websocket_client = WebSocketClient()
 
         self.ansip_screen = ansiparser.new_screen()
 

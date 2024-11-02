@@ -29,7 +29,6 @@ async def _login(session: Session, account: str, password: str) -> Session:
 
     # create connection
     session = Session()
-    session.websocket_client = WebSocketClient()
 
     asyncio.create_task(session.websocket_client.connect())
     logger.info("Connect to the WebSocket server")
