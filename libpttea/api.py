@@ -77,7 +77,7 @@ class API:
 
         return await ptt_functions.get_post_list_by_range(self.session, board, start, stop)
 
-    async def get_post(self, board: str, index: int) -> AsyncGenerator[tuple[str, list]]:
+    async def get_post(self, board: str, index: int) -> AsyncGenerator[tuple[list, list]]:
         """Get the post, return an Asynchronous Generator that 
         yields post data as a `tuple(content_html, post_replies)`.
 

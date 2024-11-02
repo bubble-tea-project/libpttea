@@ -484,7 +484,7 @@ async def _get_full_post(session: Session, board: str, index: int) -> AsyncGener
         progress = __extract_progress(current_screen[-1])
 
 
-async def get_post(session: Session, board: str, index: int) -> AsyncGenerator[tuple[str, list]]:
+async def get_post(session: Session, board: str, index: int) -> AsyncGenerator[tuple[list, list]]:
     """Get the post, return an Asynchronous Generator that 
     yields post data as a `tuple(content_html, post_replies)`."""
 
@@ -504,5 +504,5 @@ async def get_post(session: Session, board: str, index: int) -> AsyncGenerator[t
 
         last_page = page
 
-        content_html, post_replies = data_processor.get_post_page(raw_page[different_index:])
-        yield content_html, post_replies
+        contents_html, post_replies = data_processor.get_post_page(raw_page[different_index:])
+        yield contents_html, post_replies

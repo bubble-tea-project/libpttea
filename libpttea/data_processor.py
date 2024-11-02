@@ -162,12 +162,12 @@ def get_different_index(page: list, last_page: list) -> int:
     return different_index
 
 
-def get_post_page(raw_post_page: list) -> tuple[str, list]:
+def get_post_page(raw_post_page: list) -> tuple[list, list]:
     """Extract the post data from the raw post page , return `tuple(post_content_html, post_replies)`."""
 
     # {'type': '噓', 'author': 'testest', 'reply': '笑死    ', 'ip': '000.000.00.00', 'datetime': '10/22 20:06'}
     post_replies = []
-    post_content_html = ""
+    post_contents_html = []
 
     found_reply = False
     post_content_end_index = -1
@@ -199,6 +199,6 @@ def get_post_page(raw_post_page: list) -> tuple[str, list]:
     # Convert the post content to HTML
     if post_content_end_index != -1:
         raw_post_content = raw_post_page[:post_content_end_index + 1]
-        post_content_html = ansiparser.from_screen(raw_post_content).to_html()
+        post_contents_html = ansiparser.from_screen(raw_post_content).to_html()
 
-    return post_content_html, post_replies
+    return post_contents_html, post_replies
