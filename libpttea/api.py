@@ -18,9 +18,31 @@ if typing.TYPE_CHECKING:
 
 
 async def login(account: str, password: str, del_duplicate=True, del_error_log=True) -> API:
-    """Log in to PTT.
+    """
+    Log in to PTT.
 
-    登入 PTT"""
+    登入 PTT
+
+    Parameters
+    ----------
+    account : str
+        The PTT account username.
+
+    password : str
+        The PTT account password.
+
+    del_duplicate : bool, default True
+        Flag that let PTT to delete duplicate login sessions if they exist.
+
+    del_error_log : bool, default True
+        Flag that let PTT to clear error logs on login.
+
+    Returns
+    -------
+    API 
+        An instance of the `API` class.
+
+    """
 
     api = API()
     await api.login(account, password, del_duplicate, del_error_log)
@@ -34,9 +56,11 @@ class API:
         self.session: Session = None
 
     async def login(self, account: str, password: str, del_duplicate=True, del_error_log=True) -> None:
-        """Log in to PTT.
+        """
+        Log in to PTT.
 
-        登入 PTT"""
+        登入 PTT
+        """
 
         self.session = await ptt_functions.login(self.session, account, password, del_duplicate, del_error_log)
 

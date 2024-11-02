@@ -115,7 +115,7 @@ async def _skip_login_init(session: Session, del_duplicate=True, del_error_log=T
         logger.debug("Skip - duplicate connections")
 
         # Send selection
-        if del_duplicate == True:
+        if del_duplicate is True:
             session.send("y")
             await session.until_string("y", drop=True)
         else:
@@ -149,8 +149,6 @@ async def _skip_login_init(session: Session, del_duplicate=True, del_error_log=T
         raise RuntimeError()
 
     # Skip - Last login attempt failed
-    messages = []
-
     message = await session.receive()
 
     find_error_log = "您要刪除以上錯誤嘗試的記錄嗎"
@@ -158,7 +156,7 @@ async def _skip_login_init(session: Session, del_duplicate=True, del_error_log=T
         logger.debug("Skip - Last login attempt failed")
 
         # Send selection
-        if del_error_log == True:
+        if del_error_log is True:
             session.send("y")
             await session.until_string("y", drop=True)
         else:
@@ -167,12 +165,10 @@ async def _skip_login_init(session: Session, del_duplicate=True, del_error_log=T
 
         session.send(pattern.NEW_LINE)
     else:
-        messages.append(message)
-
-    # Wait for the home menu to load
-    for message in messages:
+        # The message is part of the home menu.
         session.ansip_screen.put(message)
 
+    # Wait for the home menu to load
     while True:
         await session.receive_and_put()
 
@@ -445,7 +441,7 @@ async def _get_post_page(session: Session, old_post_status_bar: str) -> list:
         post_status_bar = current_screen[-1]
         match = re.search(pattern.regex_post_status_bar, current_screen[-1])
         if (match and
-            post_status_bar != old_post_status_bar):
+                post_status_bar != old_post_status_bar):
             # check status bar is complete and differs from the previous one
             old_post_status_bar = post_status_bar
             return current_screen
