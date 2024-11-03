@@ -17,15 +17,15 @@ if typing.TYPE_CHECKING:
 
 
 async def search_board(session: Session, board: str) -> None:
+    """Search for the board, and if it is found, the cursor will move to that position."""
 
-    # let cursor to first item
+    # let cursor to first item in favorite
     session.send(pattern.HOME)
 
     # switch list all
     current_screen = session.ansip_screen.to_formatted_string()
     # check status bar
-    match = re.search(R"列出全部", current_screen[-1])
-    if match:
+    if re.search(R"列出全部", current_screen[-1]):
         # (y)列出全部
         session.send("y")
 
@@ -45,10 +45,10 @@ async def search_board(session: Session, board: str) -> None:
         session.ansip_screen.parse()
 
         # The cursor has not moved
-        match = re.search(pattern.regex_favorite_cursor_not_moved, message)
-        if match:
-
+        if re.search(pattern.regex_favorite_cursor_not_moved, message):
             # Found, it is the first item
+
+            # Recheck if the board is present on the current page
             regex_cursor_board = R"^>.+" + board
             current_screen = session.ansip_screen.to_formatted_string()
             if not any([re.search(regex_cursor_board, _) for _ in current_screen]):
@@ -59,8 +59,7 @@ async def search_board(session: Session, board: str) -> None:
 
         # The cursor has moved
         # Found, not the first item
-        match = re.search(pattern.regex_favorite_cursor_moved, message)
-        if match:
+        if re.search(pattern.regex_favorite_cursor_moved, message):
             break
 
 
