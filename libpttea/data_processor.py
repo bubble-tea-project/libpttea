@@ -73,14 +73,14 @@ def get_favorite_list(favorite_pages: list) -> list:
     return favorite_list
 
 
-def _process_board_line(line: str) -> dict | None:
+def _process_board_line(line: str) -> dict:
 
     match = re.search(pattern.regex_post_item, line)
     if match:
         # extract all named groups
         return match.groupdict()
     else:
-        return None
+        raise RuntimeError("Failed to process the board line")
 
 
 def get_latest_post_index(board_page: list) -> int:
@@ -92,15 +92,12 @@ def get_latest_post_index(board_page: list) -> int:
     for line in reversed(content):
         item = _process_board_line(line)
 
-        if item is None:
-            raise RuntimeError()
-
-        # skip pin post
+        # Skip pinned posts and find the first index that is a digit
         match = re.search(R"\d+", item["index"])
         if match:
             return int(item["index"])
 
-    raise RuntimeError()
+    raise RuntimeError("Failed to find the first index")
 
 
 def get_post_list_by_range(board_pages: list, start: int, stop: int) -> list:

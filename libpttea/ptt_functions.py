@@ -335,7 +335,7 @@ async def get_favorite_list(session: Session) -> list:
 
 
 async def _get_board_page(session: Session, board: str) -> list:
-    """get the board pages"""
+    """get the latest board page"""
 
     if session.router.location() != f"/favorite/{board}":
         await session.router.go(f"/favorite/{board}")

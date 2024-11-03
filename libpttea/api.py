@@ -117,9 +117,21 @@ class API:
         return await ptt_functions.get_favorite_list(self.session)
 
     async def get_latest_post_index(self, board: str) -> int:
-        """get the latest post index.
+        """
+        Get the latest post index.
 
         取得最新的文章編號
+
+        Parameters
+        ----------
+        board : str
+            The PTT board name.
+
+        Returns
+        -------
+        int
+            Return the latest post index in a specific board.
+
         """
 
         return await ptt_functions.get_latest_post_index(self.session, board)
