@@ -136,10 +136,36 @@ class API:
 
         return await ptt_functions.get_latest_post_index(self.session, board)
 
-    async def get_post_list(self, board: str, start: int, stop: int) -> list:
-        """Get the post list by range; the `start` < `stop` is required.
+    async def get_post_list(self, board: str, start: int, stop: int) -> list[dict]:
+        """
+        Get the post list by range; the `start` < `stop` is required.
 
         取得範圍內的文章列表
+
+        Parameters
+        ----------
+        board : str
+            The PTT board name.
+
+        start : int
+            The starting index of the post range (inclusive).
+
+        stop : int
+            The ending index of the post range (inclusive).
+
+        Returns
+        -------
+        list[dict]
+            Return a list of dict that contains post info.
+
+            - post item , dict like
+                {'index': '',
+                'label': '',
+                'count': '',
+                'date': '',
+                'author': '',
+                'title': ''}
+
         """
 
         return await ptt_functions.get_post_list_by_range(self.session, board, start, stop)

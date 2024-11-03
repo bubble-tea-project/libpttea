@@ -371,8 +371,6 @@ async def _get_board_pages_by_range(session: Session, board: str, start: int, st
         top_line = screen[3]
 
         top_element = data_processor._process_board_line(top_line)
-        if top_element is None:
-            raise RuntimeError()
 
         return int(top_element["index"])
 
@@ -385,7 +383,7 @@ async def _get_board_pages_by_range(session: Session, board: str, start: int, st
     # pages
     board_pages = []
 
-    # add current
+    # add current page
     current_screen = session.ansip_screen.to_formatted_string()
     board_pages.append(current_screen)
 

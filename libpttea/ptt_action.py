@@ -65,8 +65,9 @@ async def search_board(session: Session, board: str) -> None:
 
 
 async def search_index(session: Session, index: int) -> None:
+    """Search for the index, and if it is found, the cursor will move to that position."""
 
-    # go to the latest
+    # go to the latest page of the board
     session.send(pattern.END)
 
     # find post
@@ -83,13 +84,12 @@ async def search_index(session: Session, index: int) -> None:
             # found in different page
             break
 
-        # check status bar
         current_screen = session.ansip_screen.to_formatted_string()
         if current_screen[-1] == "":
-            # found in same page
+            # If found on the same page, the status bar will disappear.
             break
 
-    # recheck
+    # Recheck if the index is present on the current page
     current_screen = session.ansip_screen.to_formatted_string()
     regex_post_index = R"^(>| )\s?" + str(index)  # '>351769 +  10/22 kannax       □  [Vtub] '
     if not any([re.search(regex_post_index, line) for line in current_screen]):

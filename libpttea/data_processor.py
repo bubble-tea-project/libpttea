@@ -78,7 +78,7 @@ def _process_board_line(line: str) -> dict:
     match = re.search(pattern.regex_post_item, line)
     if match:
         # extract all named groups
-        return match.groupdict()
+        return match.groupdict(default="")
     else:
         raise RuntimeError("Failed to process the board line")
 
@@ -110,9 +110,6 @@ def get_post_list_by_range(board_pages: list, start: int, stop: int) -> list:
 
         for line in reversed(content):
             line_items = _process_board_line(line)
-
-            if line_items is None:
-                raise RuntimeError()
 
             if not line_items["index"].isdigit():
                 # skip pin post
