@@ -9,6 +9,7 @@ import re
 
 
 # keyboard
+# ---
 NEW_LINE = "\r\n"
 
 # https://en.wikipedia.org/wiki/ANSI_escape_code#Terminal_input_sequences
@@ -24,31 +25,50 @@ PAGE_DOWN = "\x1b[6~"
 
 
 # regular expression
+# ---
 
+# /favorite/C_Chat
+# r'^/favorite/\w+$'
+regex_path_at_board = re.compile(R'''
+    ^/favorite/     # "/favorite/"
+    \w+$             # board and ensure is end               
+''', re.VERBOSE)
+
+# /favorite/C_Chat/335045
+# r'^/favorite/\w+/\d+'
+regex_path_at_post_index = re.compile(R'''
+    ^/favorite/     # "/favorite/"
+    \w+             # board
+    /\d+            # "/335045" ,  post index
+''', re.VERBOSE)
+
+
+# r'.+\x1b(?:\[[^\x40-\x7E]*)?$'
+regex_incomplete_ansi_escape = re.compile(R'''
+    .*                      # any
+    \x1b                    # start with '\x1B'                                   
+    (?:
+        \[[^\x40-\x7E]*     # Final characters that are not valid terminators                            
+    )?$                     # at end ,zero or one times           
+''', re.VERBOSE)
+
+
+# [00/0 星期天 00:00] [ 牡羊時 ]    線上66666人, 我是TEST         [呼叫器]打開
 # r'\[\d+\/\d+\s\S+\s\d+:\d+\].+人,.+\[呼叫器\](?:打開|拔掉|防水|好友)'
 regex_menu_status_bar = re.compile(R'''
     \[\d+\/\d+\s\S+\s\d+:\d+\]    # [0/00 星期五 22:00]
-    .+人,.+    # Intermediate part
-    \[呼叫器\]  # [呼叫器]打開
-    (?:打開|拔掉|防水|好友)     #                               
+    .+人,.+                       # Intermediate part
+    \[呼叫器\]                     # [呼叫器]
+    (?:打開|拔掉|防水|好友)          #                               
 ''', re.VERBOSE)
 
-# r'文章選讀.+進板畫面'
 # 文章選讀  (y)回應(X)推文(^X)轉錄 (=[]<>)相關主題(/?a)找標題/作者 (b)進板畫面
+# r'文章選讀.+進板畫面'
 regex_board_status_bar = re.compile(R'''
     文章選讀        # '文章選讀'
     .+            # Intermediate part
-    進板畫面       # '進板畫面'
+    進板畫面        # '進板畫面'
 ''', re.VERBOSE)
-
-# The post has no content; it has already been deleted.
-# r'此文章無內容.+按任意鍵繼續'
-regex_post_no_content = re.compile(R'''
-    此文章無內容        # 
-    .+            # Intermediate part
-    按任意鍵繼續       # 
-''', re.VERBOSE)
-
 
 # 瀏覽 第 1/4 頁 ( 12%)  目前顯示: 第 01~25 行                                (y)回應(X%)推文(h)說明(← )離開
 # r'瀏覽.+目前顯示.+說明.+離開'
@@ -119,25 +139,6 @@ regex_favorite_cursor_not_moved = re.compile(R'''
 ''', re.VERBOSE)
 
 
-# path at board
-# /favorite/C_Chat
-# r'^/favorite/\w+$'
-regex_path_at_board = re.compile(R'''
-    ^/favorite/     # "/favorite/"
-    \w+$             # board and ensure is end               
-''', re.VERBOSE)
-
-# path at post index
-# /favorite/C_Chat/335045
-# r'^/favorite/\w+/\d+'
-regex_path_at_post_index = re.compile(R'''
-    ^/favorite/     # "/favorite/"
-    \w+             # board
-    /\d+            # "/335045" ,  post index
-''', re.VERBOSE)
-
-
-# post_item
 # https://www.ptt.cc/bbs/PttNewhand/M.1286283859.A.F6D.html
 # https://www.ptt.cc/bbs/PttNewhand/M.1265292872.A.991.html
 # 351393 + 3 9/24 yankeefat    □ [敗北] 騙人...的八...
@@ -155,19 +156,6 @@ regex_post_item = re.compile(R'''
     (?P<title>.+)                       # post title                                                                                                                                                     
 ''', re.VERBOSE)
 
-
-# incomplete ANSI escape
-# r'.+\x1b(?:\[[^\x40-\x7E]*)?$'
-regex_incomplete_ansi_escape = re.compile(R'''
-    .*     # any
-    \x1b   # start with '\x1B'                                   
-    (?:
-        \[[^\x40-\x7E]*     # Final characters that are not valid terminators                            
-    )?$     # at end ,zero and one times           
-''', re.VERBOSE)
-
-
-# post reply
 # (?P<type>[推→噓])\s(?P<author>\w+):\s(?P<reply>.+)\s(?P<ip>(?:\d{1,3}\.?){4})?\s(?P<datetime>\d{1,2}\/\d{1,2}\s\d{2}:\d{2})
 regex_post_reply = re.compile(R'''
     (?P<type>[推→噓])     # reply type
@@ -179,4 +167,12 @@ regex_post_reply = re.compile(R'''
     (?P<ip>(?:\d{1,3}\.?){4})?  # ip ,optional
     \s
     (?P<datetime>\d{1,2}\/\d{1,2}\s\d{2}:\d{2}) # datetime                                                                                                                   
+''', re.VERBOSE)
+
+# The post has no content; it has already been deleted.
+# r'此文章無內容.+按任意鍵繼續'
+regex_post_no_content = re.compile(R'''
+    此文章無內容       # 
+    .+               # Intermediate part
+    按任意鍵繼續       # 
 ''', re.VERBOSE)
