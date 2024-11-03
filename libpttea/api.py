@@ -171,9 +171,35 @@ class API:
         return await ptt_functions.get_post_list_by_range(self.session, board, start, stop)
 
     async def get_post(self, board: str, index: int) -> AsyncGenerator[tuple[list, list]]:
-        """Get the post, return an Asynchronous Generator that 
-        yields post data as a `tuple(content_html, post_replies)`.
+        """
+        Get the post data.
 
-        取得文章資料"""
+        取得文章資料
+
+        Parameters
+        ----------
+        board : str
+            The PTT board name.
+
+        index : int
+            The post index.
+
+        Returns
+        -------
+        AsyncGenerator[tuple[list, list]]
+            return an Asynchronous Generator that yields post data as a `tuple(contents_html, post_replies)`
+
+            -`contents_html`:
+                list of html string.
+
+            -`post_replies`:
+                list of dict that contains reply , dict like
+                    {'type': '',
+                    'author': '',
+                    'reply': '',
+                    'ip': '',
+                    'datetime': ''}
+
+        """
 
         return ptt_functions.get_post(self.session, board, index)

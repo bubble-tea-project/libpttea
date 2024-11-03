@@ -480,8 +480,7 @@ async def _get_full_post(session: Session, board: str, index: int) -> AsyncGener
 
 
 async def get_post(session: Session, board: str, index: int) -> AsyncGenerator[tuple[list, list]]:
-    """Get the post, return an Asynchronous Generator that 
-    yields post data as a `tuple(content_html, post_replies)`."""
+    """Get the post, return an Asynchronous Generator that yields post data."""
 
     logger.info("get_post")
 

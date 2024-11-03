@@ -168,7 +168,7 @@ def get_different_index(page: list, last_page: list) -> int:
 
 
 def get_post_page(raw_post_page: list) -> tuple[list, list]:
-    """Extract the post data from the raw post page , return `tuple(post_content_html, post_replies)`."""
+    """Extract the post data from the raw post page , return `tuple(post_contents_html, post_replies)`."""
 
     # {'type': '噓', 'author': 'testest', 'reply': '笑死    ', 'ip': '000.000.00.00', 'datetime': '10/22 20:06'}
     post_replies = []
@@ -185,7 +185,7 @@ def get_post_page(raw_post_page: list) -> tuple[list, list]:
         # found reply
         match = re.search(pattern.regex_post_reply, line)
         if match:
-            post_replies.append(match.groupdict())
+            post_replies.append(match.groupdict(default=""))
             found_reply = True
             continue
 
@@ -196,9 +196,8 @@ def get_post_page(raw_post_page: list) -> tuple[list, list]:
 
         # content , but found replies on the same page.
         if found_reply is True:
-            # {'type': 'author', 'reply': '笑死'}
             # For the author's reply that edited the content.
-            post_replies.append({'type': 'author', 'reply': line})
+            post_replies.append({'type': 'author', 'reply': line, 'reply': '', 'ip': '', 'datetime': ''})
             continue
 
     # Convert the post content to HTML
