@@ -15,7 +15,12 @@ author = 'vHrqO'
 
 extensions = ['sphinx.ext.autodoc',
               'myst_parser',
+              'sphinx.ext.napoleon',
               ]
+
+# Napoleon settings
+napoleon_use_rtype = False
+
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
