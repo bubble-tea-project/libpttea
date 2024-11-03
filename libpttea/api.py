@@ -17,7 +17,7 @@ if typing.TYPE_CHECKING:
     from .sessions import Session
 
 
-async def login(account: str, password: str, del_duplicate=True, del_error_log=True) -> API:
+async def login(account: str, password: str, del_duplicate=True, del_error_log=True, timeout_delay=0) -> API:
     """
     Log in to PTT.
 
@@ -37,6 +37,9 @@ async def login(account: str, password: str, del_duplicate=True, del_error_log=T
     del_error_log : bool, default True
         Flag that let PTT to clear error logs on login.
 
+    timeout_delay : int, default 0
+        For user-defined additional timeout
+
     Returns
     -------
     API 
@@ -45,7 +48,7 @@ async def login(account: str, password: str, del_duplicate=True, del_error_log=T
     """
 
     api = API()
-    await api.login(account, password, del_duplicate, del_error_log)
+    await api.login(account, password, del_duplicate, del_error_log, timeout_delay)
 
     return api
 
@@ -55,17 +58,36 @@ class API:
 
         self.session: Session = None
 
-    async def login(self, account: str, password: str, del_duplicate=True, del_error_log=True) -> None:
+    async def login(self, account: str, password: str, del_duplicate=True, del_error_log=True, timeout_delay=0) -> None:
         """
         Log in to PTT.
 
         登入 PTT
+
+        Parameters
+        ----------
+        account : str
+            The PTT account username.
+
+        password : str
+            The PTT account password.
+
+        del_duplicate : bool, default True
+            Flag that let PTT to delete duplicate login sessions if they exist.
+
+        del_error_log : bool, default True
+            Flag that let PTT to clear error logs on login.
+
+        timeout_delay : int, default 0
+            For user-defined additional timeout
+
         """
 
-        self.session = await ptt_functions.login(self.session, account, password, del_duplicate, del_error_log)
+        self.session = await ptt_functions.login(self.session, account, password, del_duplicate, del_error_log, timeout_delay)
 
     async def logout(self, force=False) -> None:
-        """Log out from PTT.
+        """
+        Log out from PTT.
 
         登出 PTT
 

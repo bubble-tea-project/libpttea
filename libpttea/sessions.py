@@ -24,13 +24,25 @@ if typing.TYPE_CHECKING:
 
 class Session:
 
-    def __init__(self) -> None:
+    def __init__(self, timeout_delay=0) -> None:
 
         self.websocket_client = WebSocketClient()
 
         self.ansip_screen = ansiparser.new_screen()
 
         self.router = Router(self)
+
+        # timeout_delay (seconds) , default_timeout + timeout_delay = total_timeout
+        self.timeout_delay = timeout_delay
+
+    def __total_timeout(self, timeout) -> int | None:
+        """calculate the `total_timeout`"""
+
+        if timeout is None:
+            # return None for blocking operations
+            return None
+        else:
+            return timeout + self.timeout_delay
 
     def send(self, string: str) -> bytes:
         """Send the message, encoded in UTF-8."""
@@ -40,17 +52,17 @@ class Session:
 
         return encoded_bytes
 
-    async def receive_raw(self, timeout=2) -> bytes:
+    async def receive_raw(self, timeout: int | None = 3) -> bytes:
         """Receive the raw message that is in bytestring."""
 
         try:
-            raw_message = await asyncio.wait_for(self.websocket_client.receive_queue.get(), timeout=timeout)
+            raw_message = await asyncio.wait_for(self.websocket_client.receive_queue.get(), timeout=self.__total_timeout(timeout))
         except TimeoutError:
             raise TimeoutError("Wait for receive timeout.")
 
         return raw_message
 
-    async def receive(self, timeout=5) -> str:
+    async def receive(self, timeout: int | None = 5) -> str:
         """Receive the raw message, wait until all fragments are received,
           reassemble them, and return the UTF-8 decoded message"""
 
@@ -73,7 +85,7 @@ class Session:
                 except UnicodeDecodeError:
                     continue
 
-        return await asyncio.wait_for(_receive(), timeout=timeout)
+        return await asyncio.wait_for(_receive(), timeout=self.__total_timeout(timeout))
 
     async def until_string(self, string: str, drop=False, timeout=10) -> str | list:
         """
@@ -99,9 +111,9 @@ class Session:
                     return messages
 
         if drop is True:
-            return await asyncio.wait_for(_until_string_drop(), timeout=timeout)
+            return await asyncio.wait_for(_until_string_drop(), timeout=self.__total_timeout(timeout))
         else:
-            return await asyncio.wait_for(_until_string(), timeout=timeout)
+            return await asyncio.wait_for(_until_string(), timeout=self.__total_timeout(timeout))
 
     async def until_regex(self, regex: str | Pattern, drop=False, timeout=10) -> str | list:
         """
@@ -131,9 +143,9 @@ class Session:
                     return messages
 
         if drop is True:
-            return await asyncio.wait_for(_until_regex_drop(), timeout=timeout)
+            return await asyncio.wait_for(_until_regex_drop(), timeout=self.__total_timeout(timeout))
         else:
-            return await asyncio.wait_for(_until_regex(), timeout=timeout)
+            return await asyncio.wait_for(_until_regex(), timeout=self.__total_timeout(timeout))
 
     async def receive_and_put(self, timeout=5) -> str:
         """Call `receive()` and put the returned message into `ansip_screen`."""

@@ -178,7 +178,7 @@ async def _skip_login_init(session: Session, del_duplicate=True, del_error_log=T
     return
 
 
-async def login(session: Session, account: str, password: str, del_duplicate: bool, del_error_log: bool) -> Session:
+async def login(session: Session, account: str, password: str, del_duplicate: bool, del_error_log: bool, timeout_delay: int) -> Session:
     """Log in to PTT."""
 
     logger.info("login")
@@ -186,7 +186,7 @@ async def login(session: Session, account: str, password: str, del_duplicate: bo
     if session is not None:
         raise RuntimeError("Is already logged in.")
     else:
-        session = Session()
+        session = Session(timeout_delay=timeout_delay)
 
     # Add ',' to get the UTF-8 response from the PTT WebSocket connection.
     await _login(session, account + ",", password)
