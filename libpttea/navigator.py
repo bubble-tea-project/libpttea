@@ -95,15 +95,16 @@ class Home:
 
         self.__session = session
 
-    async def _utility(self) -> None:
+    async def _go_utility(self) -> None:
 
         self.__session.send("x")
         self.__session.send(pattern.RIGHT_ARROW)
 
+        # wait utility loaded
         await self.__session.until_string_and_put("《查看系統資訊》")
         self.__session.ansip_screen.parse()
 
-    async def _favorite(self) -> None:
+    async def _go_favorite(self) -> None:
 
         # select index , 我 的 最愛
         self.__session.send("f")
@@ -118,9 +119,9 @@ class Home:
 
         match target:
             case "favorite":
-                await self._favorite()
+                await self._go_favorite()
             case "utility":
-                await self._utility()
+                await self._go_utility()
             case _:
                 raise NotImplementedError(f"Not supported yet , {target}.")
 
@@ -132,11 +133,12 @@ class Utility:
 
         self.__session = session
 
-    async def _info(self) -> None:
+    async def _go_info(self) -> None:
 
         self.__session.send("x")
         self.__session.send(pattern.RIGHT_ARROW)
 
+        # wait info loaded
         await self.__session.until_string_and_put("請按任意鍵繼續")
         self.__session.ansip_screen.parse()
 
@@ -144,7 +146,7 @@ class Utility:
 
         match target:
             case "info":
-                await self._info()
+                await self._go_info()
             case _:
                 raise NotImplementedError(f"Not supported yet , {target}.")
 
@@ -245,7 +247,7 @@ class Board:
 
         self.__session = session
 
-    async def _post_by_index(self, index: int) -> None:
+    async def _go_post_by_index(self, index: int) -> None:
 
         # find index
         await ptt_action.search_index(self.__session, index)
@@ -262,7 +264,7 @@ class Board:
 
     async def go(self, target: int) -> None:
 
-        await self._post_by_index(target)
+        await self._go_post_by_index(target)
 
     async def back(self) -> None:
 
