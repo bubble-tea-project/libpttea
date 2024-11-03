@@ -17,7 +17,6 @@
 ```{eval-rst}
 .. autoclass:: API
     :members:
-    :exclude-members: login
     :member-order: bysource
 
 ```
