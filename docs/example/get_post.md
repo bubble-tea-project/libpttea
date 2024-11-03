@@ -25,9 +25,7 @@ post_data = await lib_pttea.get_post( "C_Chat" , 352036 )
 async for page_data in post_data:
     content , reply = page_data
 
-    if content:
-        post_content.append(content)
-
+    post_content.extend(content)
     post_reply.extend(reply)
 
 ```
