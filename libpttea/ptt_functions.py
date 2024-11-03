@@ -24,12 +24,10 @@ if typing.TYPE_CHECKING:
 logger = logging.getLogger("libpttea")
 
 
-async def _login(session: Session, account: str, password: str) -> Session:
+async def _login(session: Session, account: str, password: str) -> None:
     """Create connection and log in."""
 
     # create connection
-    session = Session()
-
     asyncio.create_task(session.websocket_client.connect())
     logger.info("Connect to the WebSocket server")
 
@@ -95,7 +93,7 @@ async def _login(session: Session, account: str, password: str) -> Session:
         raise RuntimeError("Check if the login start loading failed.")
 
     logger.info("Logged in")
-    return session
+    return
 
 
 async def _skip_login_init(session: Session, del_duplicate=True, del_error_log=True) -> None:
@@ -187,9 +185,11 @@ async def login(session: Session, account: str, password: str, del_duplicate: bo
 
     if session is not None:
         raise RuntimeError("Is already logged in.")
+    else:
+        session = Session()
 
     # Add ',' to get the UTF-8 response from the PTT WebSocket connection.
-    session = await _login(session, account + ",", password)
+    await _login(session, account + ",", password)
 
     await _skip_login_init(session, del_duplicate, del_error_log)
 
