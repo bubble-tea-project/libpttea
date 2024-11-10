@@ -195,7 +195,10 @@ def get_post_page(raw_post_page: list) -> tuple[list, list]:
             continue
 
         # content , but found replies on the same page.
-        if found_reply is True:
+        if (found_reply is True and
+                line != ""):
+            # If there are only a few replies, the page will include empty lines after the replies.
+
             # For the author's reply that edited the content.
             post_replies.append({'type': 'author', 'reply': line, 'ip': '', 'datetime': ''})
             continue
