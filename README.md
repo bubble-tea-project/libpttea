@@ -67,6 +67,7 @@ asyncio.run(main())
 
 ## 🔗 Links
 - [LibPttea Documentation](https://bubble-tea-project.github.io/libpttea/)
+- [LibPttea Dart Version](https://github.com/bubble-tea-project/libpttea-dart/)
 
 
 ## 📜 License
