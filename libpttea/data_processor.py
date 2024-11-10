@@ -197,7 +197,7 @@ def get_post_page(raw_post_page: list) -> tuple[list, list]:
         # content , but found replies on the same page.
         if found_reply is True:
             # For the author's reply that edited the content.
-            post_replies.append({'type': 'author', 'reply': line, 'reply': '', 'ip': '', 'datetime': ''})
+            post_replies.append({'type': 'author', 'reply': line, 'ip': '', 'datetime': ''})
             continue
 
     # Convert the post content to HTML
